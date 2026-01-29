@@ -1,0 +1,32 @@
+# Uploads directory
+assets/uploads/
+
+# Logs
+application/logs/
+
+# Cache
+application/cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# PHP
+.env
+.env.local
+
+# Node modules (if used)
+node_modules/
+package-lock.json
+
+# Composer
+vendor/
+composer.lock
+.zip

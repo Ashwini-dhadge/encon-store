@@ -1,0 +1,6 @@
+user_id,role_id,branch_id,login/logout,system_inforamtion,brwoser_inforation,created_at
+1,1,admin,login,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64  rv:147.0) Gecko/20100101 Firefox/147.0","2026-01-03 13:31:18"
+1,1,admin,login,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64  rv:147.0) Gecko/20100101 Firefox/147.0","2026-01-03 14:42:06"
+1,1,admin,login,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64  rv:147.0) Gecko/20100101 Firefox/147.0","2026-01-03 16:15:48"
+1,1,admin,login,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64  rv:147.0) Gecko/20100101 Firefox/147.0","2026-01-03 18:11:10"
+1,1,admin,login,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64  rv:147.0) Gecko/20100101 Firefox/147.0","2026-01-03 19:55:46"

@@ -1,0 +1,8 @@
+  <span class="text-danger small" id="invoice_date_error" style="display:none;"></span>
+
+<script src="<?php echo base_url(); ?>assets/js/page-js/Account/invoice-date-validation.js"></script>
+
+$('#datepicker').on('changeDate', function(e) {
+        console.log('Date changed:', $(this).datepicker('getDate'));
+         validateInvoiceDateOnSelect($(this));
+});

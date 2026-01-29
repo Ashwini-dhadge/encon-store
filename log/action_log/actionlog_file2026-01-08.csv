@@ -1,0 +1,4 @@
+user_id,role_id,financial_year,company_id,site_id,action,description,ref_type,ref_id,sub_ref_type,sub_ref_id,created_at,json_data
+1,1,admin,login," logged - super1 admin1 as Super Admin in ",0,3,1,0,0,"2026-01-08 19:56:50",YTozOntzOjU6ImVtYWlsIjtzOjIwOiJzdXBlcmFkbWluQGdtYWlsLmNvbSI7czo4OiJwYXNzd29yZCI7czo2OiIxMjM0NTYiO3M6MTA6ImRlbGV0ZWRfYnkiO047fQ==
+1,1,3,3,42,change," Login to new site and financial year - super1 admin1 as Super Admin at ENCON COOLING TOWERS PVT. LTD.-Plot No- B 101,  SINNAR TALUKA AUDYOGIK VASAHAT MARYADIT MUSALGAON MIDC, POST MUSALGAON, DISTRICT NA",,,,,,"2026-01-08 20:24:05",YToyOntzOjI0OiJjb21tb25fY29tcGFueV9zaXRlX2RhdGEiO3M6MjoiNDIiO3M6MjE6ImNvbW1vbl9maW5hbmNpYWxfeWVhciI7czoxOiIzIjt9
+1,1,,logout,"super1 admin1 Logout  From",0,3,1,0,0,"2026-01-08 20:43:13",
