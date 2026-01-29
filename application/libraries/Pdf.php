@@ -3,15 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
-
+#[\AllowDynamicProperties]
 class Pdf extends TCPDF {
-    protected $pdf;
 
     // public function __construct() {
     //     parent::__construct();
 //     // }
 // protected $pdf;
-
 
     public function __construct() {
         parent::__construct();

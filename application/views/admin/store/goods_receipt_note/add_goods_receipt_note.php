@@ -52,7 +52,7 @@
                            <?php
                               $grn_date=date('d/m/Y');
                               $grn_time=date('H:m');
-                              // echo  $grn_info['grn_date'];die;
+                             //  echo  $grn_info['grn_date'];die;
                            // print_r($grn_info);die;
                               //type 1: direct GRN 2: GRn ahinst PO
                                     if($type==2 || $type==3){
@@ -64,7 +64,6 @@
                                        $vendorId=$grn_info['vendor_id'];
                                        $id=$grn_info['id'];
                                        $grn_number=$grn_info['grn_no'];
-                                       $grn_order_sequence=$grn_info['grn_order_sequence'];
                                        $grn_date=date('d/m/Y',strtotime($grn_info['grn_date']));
                                        $grn_time=date('H:m',strtotime($grn_info['grn_time']));
                                        
@@ -76,7 +75,7 @@
                                         
                                     }
                                     
-                                    // echo $grn_number;die;
+                                    // echo $grn_date;die;
                               ?>
                            <input type="hidden" name="po_id" id="po_id" value="<?= isset($po_id)?$po_id:"" ?>">
                            <input type="hidden" name="vendorId" id="vendorId" value="<?= isset($vendorId)?$vendorId:"" ?>">

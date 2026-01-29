@@ -43,9 +43,6 @@ class GoodsReceiptNote extends CI_Controller
         $number=$this->GRNModel->getGRNNumber();
         $data['grn_order_sequence'] = $number['grn_order_sequence'];
         $data['grn_number'] = $number['grn_order'];
-        // echo "<pre>";
-        // print_r($data);
-        // die;
         if($type==2){
                          //$id is po_id
                       
@@ -223,8 +220,6 @@ class GoodsReceiptNote extends CI_Controller
                                 unset($insert['site_id']);
                                 unset($insert['company_id']);
                                 unset($insert['financial_year_id']);
-                                  unset($insert['grn_no']);
-                                unset($insert['grn_order_sequence']);
                                 $insert['updated_at'] = date('Y-m-d');
                                 $insert['updated_by'] = userId();
                                 $this->CommonModel->iudAction('tbl_grn', $insert, 'update', array('id' => $post['id']));
