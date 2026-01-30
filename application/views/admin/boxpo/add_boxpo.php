@@ -6,6 +6,20 @@
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 <!-- Page wrapper  -->
 <style>
+    .action-cell {
+        white-space: nowrap;
+        width: 70px;
+    }
+
+    .btn-add-battan,
+    .btn-remove-battan {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        line-height: 28px;
+        margin: 0 2px;
+    }
+
     .dropzone {
         border: none;
     }
@@ -284,7 +298,7 @@
                                                 <th>Qty</th>
                                                 <th>Sq.inch</th>
                                                 <th>
-                                                    <button type="button" class="btn btn-success btn-sm" onclick="addRow()">+</button>
+                                                    Action
                                                 </th>
                                             </tr>
                                         </thead>
@@ -329,9 +343,11 @@
                                                             <span class="sqinch-text"><?= $d['sq_inch'] ?></span>
                                                         </td>
 
-                                                        <td>
-                                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">×</button>
+                                                        <td class="action-cell">
+                                                            <button type="button" class="btn btn-success btn-sm btn-add-battan">+</button>
+                                                            <button type="button" class="btn btn-danger btn-sm btn-remove-battan">×</button>
                                                         </td>
+
                                                     </tr>
                                                 <?php endforeach; ?>
 
@@ -369,9 +385,11 @@
                                                         <span class="sqinch-text">0</span>
                                                     </td>
 
-                                                    <td>
-                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">×</button>
+                                                    <td class="action-cell">
+                                                        <button type="button" class="btn btn-success btn-sm btn-add-battan">+</button>
+                                                        <button type="button" class="btn btn-danger btn-sm btn-remove-battan">×</button>
                                                     </td>
+
                                                 </tr>
 
                                             <?php endif; ?>
@@ -523,6 +541,20 @@
     </script>
 
     <script>
+        function autoFill($input, value) {
+
+            if ($input.val() === '' || $input.data('auto') === true) {
+
+                $input
+                    .val(value)
+                    .prop('readonly', true)
+                    .addClass('bg-light auto-filled')
+                    .data('auto', true);
+
+            }
+
+        }
+
         function keepSpecialRowsAtBottom() {
             let $loose = $('#sheetBody tr[data-loose="1"]');
             let $joint = $('#sheetBody tr[data-joint="1"]');
@@ -649,6 +681,10 @@
                 .prop('readonly', true)
                 .addClass('bg-light');
 
+            $row.find('.qty')
+                .prop('readonly', true)
+                .addClass('bg-light');
+
             $row.find('button').prop('disabled', true);
 
             $('#sheetBody').append($row);
@@ -668,7 +704,8 @@
             if (isNaN(W)) W = '';
 
             $('#sheetBody tr[data-loose="1"]').each(function() {
-                $(this).find('.length').val(W).prop('readonly', true);
+                autoFill($(this).find('.length'), W);
+
             });
         }
 
@@ -694,11 +731,11 @@
             if (section === 'Base' && type === 'Planks') {
 
                 if (!$len.val()) {
-                    $len.val(mainL + 3);
+                    autoFill($len, mainL + 3);
                 }
 
                 if (!$wid.val()) {
-                    $wid.val(mainW + 2);
+                    autoFill($wid, mainW + 2);
                 }
 
             }
@@ -707,10 +744,9 @@
             if (section === 'Base' && type === 'Battans') {
 
                 if (!$len.val()) {
-                    $len.val(mainW + 2);
+                    autoFill($len, mainW + 2);
                 }
 
-                // keep blank (calculated later)
 
             }
 
@@ -719,12 +755,12 @@
             if (section === 'Top' && type === 'Planks') {
 
                 if (!$len.val()) {
-                    $len.prop('disabled', false);
-                    $len.val(mainL + 3);
+                    // $len.prop('disabled', false);
+                    autoFill($len, mainL + 3);
                 }
 
                 if (!$wid.val()) {
-                    $wid.val(mainW + 2);
+                    autoFill($wid, mainW + 2);
                 }
 
             }
@@ -733,7 +769,7 @@
             if (section === 'Top' && type === 'Battans') {
 
                 if (!$len.val()) {
-                    $len.val(mainW + 2);
+                    autoFill($len, mainW + 2);
                 }
 
             }
@@ -742,22 +778,22 @@
             if (section === 'Long Side' && type === 'Planks') {
 
                 if (!$len.val()) {
-                    $len.val(mainL + 3);
+                    autoFill($len, mainL + 3);
                 }
 
                 if (!$wid.val()) {
-                    $wid.val(mainH);
+                    autoFill($wid, mainW + 2);
                 }
 
                 if (!$thk.val()) {
-                    $thk.val(mainT);
+                    autoFill($thk, mainT);
                 }
             }
 
             if (section === 'Long Side' && type === 'Battans') {
 
                 if (!$len.val()) {
-                    $len.val(mainH + 5);
+                    autoFill($len, mainH + 5);
                 }
 
 
@@ -767,15 +803,15 @@
             if (section === 'Short Side' && type === 'Planks') {
 
                 if (!$len.val()) {
-                    $len.val(mainW);
+                    autoFill($len, mainW);
                 }
 
                 if (!$wid.val()) {
-                    $wid.val(mainH);
+                    autoFill($wid, mainW + 2);
                 }
 
                 if (!$thk.val()) {
-                    $thk.val(mainT);
+                    autoFill($thk, mainT);
                 }
             }
 
@@ -790,20 +826,22 @@
                 if (battanIndex === 0) {
 
                     if (!$len.val()) {
-                        $len.val(mainH - 6);
+                        // $len.val(mainH - 6);
+                        autoFill($len, mainH - 6);
                     }
 
 
 
                     if (!$qty.val()) {
-                        $qty.val(qtyFromHeight(mainH));
+                        // $qty.val(qtyFromHeight(mainH));
+                        autoFill($qty, qtyFromHeight(mainH));
                     }
                 }
 
                 if (battanIndex === 1) {
 
                     if (!$len.val()) {
-                        $len.val(mainW);
+                        autoFill($len, mainW);
                     }
 
                     // if (!$wid.val()) {
@@ -816,11 +854,11 @@
                 if (section === 'JOINT >=150') {
 
                     if (!$wid.val()) {
-                        $wid.val(mainW + 2);
+                        autoFill($wid, mainW + 2);
                     }
 
                     if (!$thk.val()) {
-                        $thk.val(mainT);
+                        autoFill($thk, mainT);
                     }
                 }
             }
@@ -836,26 +874,27 @@
                 if (jointIndex === 0) {
 
                     if (!$wid.val()) {
-                        $wid.val(mainW + 2);
+                        autoFill($wid, mainW + 2);
                     }
 
                     if (!$thk.val()) {
-                        $thk.val(mainT);
+                        autoFill($thk, mainT);
                     }
 
                     if (!$qty.val()) {
-                        $qty.val(mainL >= 150 ? 4 : 0);
+                        // $qty.val(mainL >= 150 ? 4 : 0);
+                        autoFill($qty, mainL >= 150 ? 4 : 0);
                     }
                 }
 
                 if (jointIndex === 1) {
 
                     if (!$wid.val()) {
-                        $wid.val(mainH + 2);
+                        autoFill($wid, mainW + 2);
                     }
 
                     if (!$thk.val()) {
-                        $thk.val(mainT);
+                        autoFill($thk, mainT);
                     }
 
                     let firstQty = $('#sheetBody tr').filter(function() {
@@ -863,7 +902,8 @@
                     }).first().find('.qty').val();
 
                     if (!$qty.val()) {
-                        $qty.val(firstQty || 0);
+                        // $qty.val(firstQty || 0);
+                        autoFill($qty, firstQty || 0);
                     }
                 }
             }
@@ -904,50 +944,81 @@
 
                 /* ================= BATTANS ================= */
 
+                /* ================= BATTANS ================= */
+
                 if (type === 'Battans' && rowAllowAuto) {
 
-                    if (isNaN(thk) && thkInp.val() === '') {
+                    let jointMode = ($('#jointToggle').val() === '1');
+                    let baseBattansQty = getBaseBattansQty();
 
-                        let jointMode = ($('#jointToggle').val() === '1');
+                    // ⭐ MASTER FLAG
+                    let isTopJoinManual = (
+                        jointMode &&
+                        section === 'Top'
+                    );
+
+                    /* ================= FORCE MANUAL FOR TOP + JOIN ================= */
+
+                    if (isTopJoinManual) {
+
+                        // Unlock Qty for typing
+                        qtyInp
+                            .prop('readonly', false)
+                            .removeClass('bg-light auto-filled')
+                            .data('auto', false);
+
+                    }
+
+                    /* ================= THICKNESS AUTO ================= */
+
+                    if (!isTopJoinManual && isNaN(thk) && thkInp.val() === '') {
 
                         if (jointMode) {
 
                             if (section === 'Top') {
-                                thk = topBattansThicknessWithJoint(L);
-                                if (thk > 0) thkInp.val(thk);
+                                let thk = (L >= 150) ? 1.5 : 1;
+                                autoFill(thkInp, thk);
                             } else if (section === 'Long Side') {
                                 let baseQty = getBaseBattansQty();
                                 thk = longSideBattansThicknessWithJoint(L, baseQty);
-                                if (thk > 0) thkInp.val(thk);
+                                if (thk > 0) autoFill(thkInp, thk);
                             } else if (section === 'Short Side') {
                                 thk = T;
-                                if (thk > 0) thkInp.val(thk);
+                                if (thk > 0) autoFill(thkInp, thk);
                             }
 
                         } else {
 
                             if (section === 'Top' || section === 'Long Side') {
                                 thk = battansThicknessFromLength(L);
-                                if (thk > 0) thkInp.val(thk);
+                                if (thk > 0) autoFill(thkInp, thk);
                             } else if (section === 'Short Side') {
                                 thk = T;
-                                if (thk > 0) thkInp.val(thk);
+                                if (thk > 0) autoFill(thkInp, thk);
                             }
+
                         }
                     }
 
-                    /* ===== BATTANS QTY ===== */
+                    /* ================= QTY AUTO ================= */
 
-                    if (isNaN(qty) && qtyInp.val() === '') {
-
-                        let baseBattansQty = getBaseBattansQty();
+                    if (!isTopJoinManual && isNaN(qty) && qtyInp.val() === '') {
 
                         if (section === 'Base') {
-                            if (baseQty > 0) qty = baseQty;
+
+                            if (baseQty > 0) autoFill(qtyInp, baseQty);
+
                         } else if (section === 'Top') {
-                            if (baseBattansQty > 0) qty = baseBattansQty;
+
+                            // ⭐ WITHOUT JOIN → DEFAULT FROM BASE BATTANS (H11)
+                            if (!jointMode && baseBattansQty > 0) {
+                                autoFill(qtyInp, baseBattansQty);
+                            }
+
                         } else if (section === 'Long Side') {
-                            if (baseBattansQty > 0) qty = baseBattansQty * 2;
+
+                            if (baseBattansQty > 0) autoFill(qtyInp, baseBattansQty * 2);
+
                         } else if (section === 'Short Side') {
 
                             let battanIndex = $('#sheetBody tr').filter(function() {
@@ -957,13 +1028,15 @@
 
                             if (battanIndex === 0) {
                                 let ssQty = qtyFromHeight(H);
-                                if (ssQty > 0) qty = ssQty;
+                                if (ssQty > 0) autoFill(qtyInp, ssQty);
                             }
+
                         }
 
-                        if (qty !== undefined) qtyInp.val(qty);
                     }
                 }
+
+
 
 
                 /* ================= LOOSE SUPPORT ================= */
@@ -973,17 +1046,9 @@
                     let looseQty = looseSupportQtyFromLength(L);
 
                     if (looseQty > 0 && (isNaN(qty) || qtyInp.val() === '')) {
-                        qtyInp.val(looseQty);
+                        autoFill(qtyInp, looseQty);
                     }
                 }
-
-
-
-
-
-
-
-
 
                 len = parseFloat(lenInp.val()) || 0;
                 wid = parseFloat(widInp.val()) || 0;
@@ -1006,17 +1071,17 @@
 
                     if (isNaN(wid) && widInp.val() === '') {
                         wid = (jointIndex === 0) ? (W + 2) : (H + 2);
-                        widInp.val(wid);
+                        autoFill(widInp, wid);
                     }
 
                     if (rowAllowAuto && isNaN(thk) && thkInp.val() === '') {
                         thk = T;
-                        thkInp.val(thk);
+                        autoFill(thkInp, thk);
                     }
 
                     if (rowAllowAuto && isNaN(qty) && qtyInp.val() === '') {
                         qty = (L >= 150) ? 4 : 0;
-                        qtyInp.val(qty);
+                        autoFill(qtyInp, qty);
                     }
                 }
 
@@ -1208,12 +1273,17 @@
 
         $(document).on('input', '#size_l,#size_w,#size_h,#size_t', function() {
 
+            // Reset all auto filled fields first
+            $('.auto-filled')
+                .prop('readonly', false)
+                .removeClass('bg-light auto-filled')
+                .data('auto', false);
+
             if (!hasMainSizeValues()) {
                 calculate(false);
                 return;
             }
 
-            // 🔥 Let original formula engine handle everything
             $('#sheetBody tr').each(function() {
                 applySectionDefaults($(this));
             });
@@ -1224,11 +1294,41 @@
 
 
 
+        $(document).on('input', '.length,.width,.thickness,.qty', function() {
+
+            if (!$(this).data('auto')) return;
+
+            $(this)
+                .prop('readonly', false)
+                .removeClass('bg-light auto-filled')
+                .data('auto', false);
+
+        });
+
 
 
         $(document).on('input', '.length,.width,.thickness,.qty,#rate', function() {
             calculate(true);
         });
+
+        function removeFirstEmptyRow() {
+
+            let $first = $('#sheetBody tr:not(.row-template)').first();
+
+            if (!$first.length) return;
+
+            let section = $first.find('.section').val();
+            let type = $first.find('.type').val();
+            let len = $first.find('.length').val();
+            let wid = $first.find('.width').val();
+            let thk = $first.find('.thickness').val();
+            let qty = $first.find('.qty').val();
+
+            if (!section && !type && !len && !wid && !thk && !qty) {
+                $first.remove();
+            }
+        }
+
 
 
         $(function() {
@@ -1236,14 +1336,95 @@
             $('#sheetBody tr').each(function() {
                 togglePlankRowStyle($(this));
             });
-
             ensureDefaultStructure();
+            controlSectionBattanButtons();
             createLooseSupportRow();
             syncLooseSupportWidth();
             keepSpecialRowsAtBottom();
+            removeFirstEmptyRow();
 
             calculate(false);
         });
+
+        /* ================= BATTAN REPEATER UI ONLY ================= */
+
+        function controlSectionBattanButtons() {
+
+            let sections = ['Base', 'Top', 'Long Side', 'Short Side'];
+
+            sections.forEach(section => {
+
+                let battans = $('#sheetBody tr').filter(function() {
+                    return $(this).find('.section').val() === section &&
+                        $(this).find('.type').val() === 'Battans' &&
+                        !$(this).data('loose') &&
+                        !$(this).data('joint');
+                });
+
+                battans.each(function(index) {
+
+                    let $plus = $(this).find('.btn-add-battan');
+                    let $del = $(this).find('.btn-remove-battan');
+
+                    // default hide
+                    $plus.hide();
+                    $del.hide();
+
+                    if (index === 0) {
+                        $plus.show();
+
+                        $del.hide();
+                    } else {
+                        $plus.hide();
+                        $del.show();
+                    }
+                });
+            });
+
+            $('#sheetBody tr').each(function() {
+                let type = $(this).find('.type').val();
+                let section = $(this).find('.section').val();
+                if (type === 'Planks' || section === 'Loose Support' || section === 'JOINT >=150' || section === '') {
+                    $(this).find('.btn-add-battan,.btn-remove-battan').hide();
+                }
+            });
+        }
+
+        $(document).on('click', '.btn-add-battan', function() {
+
+            let $current = $(this).closest('tr');
+            let section = $current.find('.section').val();
+
+            if (!section) return;
+
+            let $clone = $current.clone();
+
+            $clone.find('input').not('.sqinch-val').val('');
+            $clone.find('.sqinch-text').text('0.00');
+            $clone.find('.sqinch-val').val('0');
+
+            $clone.find('.section').val(section);
+            $clone.find('.type').val('Battans');
+
+            let $last = $('#sheetBody tr').filter(function() {
+                return $(this).find('.section').val() === section &&
+                    $(this).find('.type').val() === 'Battans' &&
+                    !$(this).data('loose') &&
+                    !$(this).data('joint');
+            }).last();
+
+            $last.after($clone);
+
+            calculate(true);
+            controlSectionBattanButtons();
+        });
+
+        $(document).on('click', '.btn-remove-battan', function() {
+            $(this).closest('tr').remove();
+            calculate(true);
+            controlSectionBattanButtons();
+        });
+
 
 
 
@@ -1433,7 +1614,7 @@
 
         function cloneCleanRow() {
 
-            let $row = $('#sheetBody tr').first().clone();
+            let $row = $('#sheetBody tr:not(.row-template)').first().clone();
 
             $row.removeAttr('data-loose data-joint')
                 .removeClass('loose-support-row joint-row');

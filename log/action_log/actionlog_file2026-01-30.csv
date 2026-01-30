@@ -1,0 +1,4 @@
+user_id,role_id,financial_year,company_id,site_id,action,description,ref_type,ref_id,sub_ref_type,sub_ref_id,created_at,json_data
+1,1,admin,login," logged - super1 admin1 as Super Admin in ",0,3,1,0,0,"2026-01-30 10:58:43",YTozOntzOjU6ImVtYWlsIjtzOjIwOiJzdXBlcmFkbWluQGdtYWlsLmNvbSI7czo4OiJwYXNzd29yZCI7czo2OiIxMjM0NTYiO3M6MTA6ImRlbGV0ZWRfYnkiO047fQ==
+1,1,admin,login," logged - super1 admin1 as Super Admin in ",0,3,1,0,0,"2026-01-30 12:23:26",YTozOntzOjU6ImVtYWlsIjtzOjIwOiJzdXBlcmFkbWluQGdtYWlsLmNvbSI7czo4OiJwYXNzd29yZCI7czo2OiIxMjM0NTYiO3M6MTA6ImRlbGV0ZWRfYnkiO047fQ==
+1,1,admin,login," logged - super1 admin1 as Super Admin in ",0,3,1,0,0,"2026-01-30 14:25:56",YTozOntzOjU6ImVtYWlsIjtzOjIwOiJzdXBlcmFkbWluQGdtYWlsLmNvbSI7czo4OiJwYXNzd29yZCI7czo2OiIxMjM0NTYiO3M6MTA6ImRlbGV0ZWRfYnkiO047fQ==
