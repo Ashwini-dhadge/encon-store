@@ -210,14 +210,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--/span-->
                                     </div>
                                 </div>
 
                                 <h3 class="box-title">Dimensions</h3>
                                 <hr class="m-t-0 m-b-10">
-                                <!-- ================= SIZE & VENDOR ================= -->
-                                <!-- ================== CU FT SHEET ================== -->
                                 <div>
                                     <table class="table table-bordered text-center" style="width:100%;">
                                         <tbody>
@@ -454,7 +451,9 @@
                                         <div class="row">
                                             <div class="col-md-offset-3 col-md-12">
                                                 <button type="button" class="btn btn-success btn-theme" onclick="submitPO()" id="submit_po">Submit</button>
-                                                <button type="button" class="btn btn-inverse btn-theme-sm">Cancel</button>
+                                                <a href="<?= base_url(ADMIN . 'BoxPO'); ?>">
+                                                    <button type="button" class="btn btn-inverse btn-theme-sm">Cancel</button>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -485,6 +484,71 @@
             );
         }
 
+        function forceResyncFromMainSize() {
+
+            if (!hasMainSizeValues()) {
+
+                $('#sheetBody tr').each(function() {
+
+                    $(this).find('.length,.width,.thickness,.qty')
+                        .each(function() {
+
+                            $(this)
+                                .val('')
+                                .prop('readonly', false)
+                                .removeClass('bg-light auto-filled')
+                                .data('auto', false);
+                        });
+
+                    $(this).find('.sqinch-text').text('0.00');
+                    $(this).find('.sqinch-val').val('0');
+                });
+
+                calculate(false);
+                return;
+            }
+
+            resetAutoDependents();
+
+            $('#sheetBody tr').each(function() {
+                applySectionDefaults($(this));
+            });
+
+            syncLooseSupportWidth();
+            calculate(true);
+        }
+
+
+
+        function lockMandatoryBattans() {
+
+            let sections = ['Base', 'Top', 'Long Side', 'Short Side'];
+
+            sections.forEach(section => {
+
+                let battans = $('#sheetBody tr').filter(function() {
+                    return $(this).find('.section').val() === section &&
+                        $(this).find('.type').val() === 'Battans' &&
+                        !$(this).data('loose') &&
+                        !$(this).data('joint');
+                });
+
+                battans.each(function(index) {
+
+                    let $row = $(this);
+
+                    if (index === 0) {
+                        lockRow($row);
+                    }
+
+                    if (section === 'Short Side') {
+                        lockRow($row);
+                    }
+                });
+            });
+        }
+
+
         function getMainSize() {
             return {
                 L: parseFloat($('#size_l').val()) || 0,
@@ -507,15 +571,64 @@
 
             if (!$baseRow.length) return;
 
-            let $row = $baseRow.clone();
-            prepareJointRow($row);
+            let $row1 = $baseRow.clone();
+            prepareJointRow($row1);
+
+            let $row2 = createSecondJointRow($row1);
 
             let $loose = $('#sheetBody tr[data-loose="1"]');
             if ($loose.length) {
-                $loose.after($row);
+                $loose.after($row2).after($row1);
             } else {
-                $('#sheetBody').append($row);
+                $('#sheetBody').append($row1).append($row2);
             }
+        }
+
+
+        function createSecondJointRow($firstJointRow) {
+
+            let $row2 = $firstJointRow.clone();
+
+            $row2
+                .attr('data-joint', '1')
+                .addClass('joint-row');
+
+            $row2.find('.section')
+                .html('<option value="" selected></option>')
+                .prop('disabled', true);
+
+            $row2.find('.type')
+                .val('Battans')
+                .prop('disabled', true);
+
+            $row2.find('.length,.width,.thickness,.qty')
+                .val('')
+                .prop('readonly', false)
+                .removeClass('bg-light auto-filled')
+                .data('auto', true);
+
+            // Disable buttons
+            $row2.find('button').prop('disabled', true);
+
+            updateRowLayout($row2);
+
+            return $row2;
+        }
+
+
+        function lockRow($row) {
+
+            // $row.find('input')
+            //     .not('.sqinch-val')
+            //     .prop('readonly', true)
+            //     .addClass('bg-light');
+
+            $row.find('select')
+                .prop('disabled', true);
+
+            // ✅ disable buttons but DO NOT hide
+            // $row.find('button')
+            //     .prop('disabled', true);
         }
 
 
@@ -577,19 +690,24 @@
 
                 if ($(this).val() === '1') {
                     createJointRows();
+
+                    if (hasMainSizeValues()) {
+                        forceResyncFromMainSize();
+                    }
+
                 } else {
                     removeJointRows();
                 }
 
                 calculate(true);
-                keepSpecialRowsAtBottom(); // 🔥 FIXED ORDER
+                keepSpecialRowsAtBottom();
             });
+
             $('#sheetBody tr').each(function() {
                 togglePlankRowStyle($(this));
             });
 
 
-            // EDIT MODE
             if (hasJointFromDB()) {
                 $('#jointToggle').val('1');
             } else {
@@ -628,7 +746,6 @@
             return (L >= 100) ? 4 : 2;
         }
 
-        /* ================= UI ================= */
 
         function updateRowLayout($row) {
             const section = $row.find('.section').val();
@@ -709,6 +826,18 @@
             });
         }
 
+        function autoFillEditable($input, value) {
+
+            if ($input.val() === '' || $input.data('auto') === true) {
+
+                $input
+                    .val(value)
+                    .prop('readonly', false)
+                    .removeClass('bg-light')
+                    .addClass('auto-filled')
+                    .data('auto', true);
+            }
+        }
 
 
         function applySectionDefaults($row) {
@@ -737,6 +866,9 @@
                 if (!$wid.val()) {
                     autoFill($wid, mainW + 2);
                 }
+                if (!$thk.val()) {
+                    autoFillEditable($thk, mainT);
+                }
 
             }
 
@@ -755,12 +887,14 @@
             if (section === 'Top' && type === 'Planks') {
 
                 if (!$len.val()) {
-                    // $len.prop('disabled', false);
                     autoFill($len, mainL + 3);
                 }
 
                 if (!$wid.val()) {
                     autoFill($wid, mainW + 2);
+                }
+                if (!$thk.val()) {
+                    autoFillEditable($thk, mainT);
                 }
 
             }
@@ -782,7 +916,7 @@
                 }
 
                 if (!$wid.val()) {
-                    autoFill($wid, mainW + 2);
+                    autoFill($wid, mainH);
                 }
 
                 if (!$thk.val()) {
@@ -807,7 +941,7 @@
                 }
 
                 if (!$wid.val()) {
-                    autoFill($wid, mainW + 2);
+                    autoFill($wid, mainH);
                 }
 
                 if (!$thk.val()) {
@@ -817,7 +951,6 @@
 
             if (section === 'Short Side' && type === 'Battans') {
 
-                // find index of this Short Side + Battans row
                 let battanIndex = $('#sheetBody tr').filter(function() {
                     return $(this).find('.section').val() === 'Short Side' &&
                         $(this).find('.type').val() === 'Battans';
@@ -826,14 +959,12 @@
                 if (battanIndex === 0) {
 
                     if (!$len.val()) {
-                        // $len.val(mainH - 6);
                         autoFill($len, mainH - 6);
                     }
 
 
 
                     if (!$qty.val()) {
-                        // $qty.val(qtyFromHeight(mainH));
                         autoFill($qty, qtyFromHeight(mainH));
                     }
                 }
@@ -843,11 +974,6 @@
                     if (!$len.val()) {
                         autoFill($len, mainW);
                     }
-
-                    // if (!$wid.val()) {
-                    //     $wid.val(3);
-                    // }
-
 
                 }
 
@@ -864,49 +990,52 @@
             }
 
 
-            if (section === 'JOINT >=150') {
+            // if (section === 'JOINT >=150') {
 
-                // find index of JOINT row
-                let jointIndex = $('#sheetBody tr').filter(function() {
-                    return $(this).find('.section').val() === 'JOINT >=150';
-                }).index($row);
+            //     let jointIndex = $('#sheetBody tr').filter(function() {
+            //         return $(this).find('.section').val() === 'JOINT >=150';
+            //     }).index($row);
 
-                if (jointIndex === 0) {
+            //     if (jointIndex === 0) {
 
-                    if (!$wid.val()) {
-                        autoFill($wid, mainW + 2);
-                    }
+            //         if (!$wid.val()) {
+            //             autoFill($wid, mainW + 2);
+            //         }
 
-                    if (!$thk.val()) {
-                        autoFill($thk, mainT);
-                    }
+            //         if (!$qty.val()) {
+            //             autoFill($qty, mainL >= 150 ? 4 : 0);
+            //         }
+            //     }
 
-                    if (!$qty.val()) {
-                        // $qty.val(mainL >= 150 ? 4 : 0);
-                        autoFill($qty, mainL >= 150 ? 4 : 0);
-                    }
+            // }
+            if ($row.data('joint') === 1) {
+
+                let $jointRows = $('#sheetBody tr[data-joint="1"]');
+                let jointIndex = $jointRows.index($row);
+
+                if (!$wid.val()) {
+                    let widthVal = (jointIndex === 0) ?
+                        (mainW + 2) :
+                        (mainH + 2);
+
+                    autoFill($wid, widthVal);
                 }
 
-                if (jointIndex === 1) {
+                // if (!$thk.val()) {
+                //     autoFill($thk, mainT);
+                // }
 
-                    if (!$wid.val()) {
-                        autoFill($wid, mainW + 2);
-                    }
+                if (!$qty.val()) {
 
-                    if (!$thk.val()) {
-                        autoFill($thk, mainT);
-                    }
-
-                    let firstQty = $('#sheetBody tr').filter(function() {
-                        return $(this).find('.section').val() === 'JOINT >=150';
-                    }).first().find('.qty').val();
-
-                    if (!$qty.val()) {
-                        // $qty.val(firstQty || 0);
+                    if (jointIndex === 0) {
+                        autoFill($qty, mainL >= 150 ? 4 : 0);
+                    } else {
+                        let firstQty = $jointRows.first().find('.qty').val();
                         autoFill($qty, firstQty || 0);
                     }
                 }
             }
+
         }
 
         function calculate(allowAuto = true) {
@@ -926,7 +1055,7 @@
 
                 let section = $row.find('.section').val();
                 let type = $row.find('.type').val();
-
+                let isJointRow = $row.data('joint') === 1;
                 let rowAllowAuto = allowAuto && hasMainSizeValues();
 
                 let lenInp = $row.find('.length');
@@ -942,36 +1071,26 @@
 
 
 
-                /* ================= BATTANS ================= */
 
-                /* ================= BATTANS ================= */
 
-                if (type === 'Battans' && rowAllowAuto) {
+                if (type === 'Battans' && rowAllowAuto && !isJointRow) {
 
                     let jointMode = ($('#jointToggle').val() === '1');
                     let baseBattansQty = getBaseBattansQty();
 
-                    // ⭐ MASTER FLAG
-                    let isTopJoinManual = (
+                    let isTopJoinQtyManual = (
                         jointMode &&
                         section === 'Top'
                     );
 
-                    /* ================= FORCE MANUAL FOR TOP + JOIN ================= */
+                    let isTopBattansWithoutJoin = !jointMode && section === 'Top';
 
-                    if (isTopJoinManual) {
 
-                        // Unlock Qty for typing
-                        qtyInp
-                            .prop('readonly', false)
-                            .removeClass('bg-light auto-filled')
-                            .data('auto', false);
-
-                    }
-
-                    /* ================= THICKNESS AUTO ================= */
-
-                    if (!isTopJoinManual && isNaN(thk) && thkInp.val() === '') {
+                    if (
+                        isNaN(thk) &&
+                        thkInp.val() === '' &&
+                        !isTopBattansWithoutJoin
+                    ) {
 
                         if (jointMode) {
 
@@ -989,38 +1108,28 @@
 
                         } else {
 
-                            if (section === 'Top' || section === 'Long Side') {
+                            if (section === 'Long Side') {
                                 thk = battansThicknessFromLength(L);
                                 if (thk > 0) autoFill(thkInp, thk);
                             } else if (section === 'Short Side') {
                                 thk = T;
                                 if (thk > 0) autoFill(thkInp, thk);
                             }
-
                         }
                     }
 
-                    /* ================= QTY AUTO ================= */
 
-                    if (!isTopJoinManual && isNaN(qty) && qtyInp.val() === '') {
+                    if (!isTopJoinQtyManual && isNaN(qty) && qtyInp.val() === '') {
 
                         if (section === 'Base') {
-
                             if (baseQty > 0) autoFill(qtyInp, baseQty);
-
                         } else if (section === 'Top') {
-
-                            // ⭐ WITHOUT JOIN → DEFAULT FROM BASE BATTANS (H11)
                             if (!jointMode && baseBattansQty > 0) {
                                 autoFill(qtyInp, baseBattansQty);
                             }
-
                         } else if (section === 'Long Side') {
-
                             if (baseBattansQty > 0) autoFill(qtyInp, baseBattansQty * 2);
-
                         } else if (section === 'Short Side') {
-
                             let battanIndex = $('#sheetBody tr').filter(function() {
                                 return $(this).find('.section').val() === 'Short Side' &&
                                     $(this).find('.type').val() === 'Battans';
@@ -1030,16 +1139,10 @@
                                 let ssQty = qtyFromHeight(H);
                                 if (ssQty > 0) autoFill(qtyInp, ssQty);
                             }
-
                         }
-
                     }
                 }
 
-
-
-
-                /* ================= LOOSE SUPPORT ================= */
 
                 if (section === 'Loose Support' && rowAllowAuto) {
 
@@ -1060,28 +1163,29 @@
                 $row.find('.sqinch-text').text(sq.toFixed(2));
                 $row.find('.sqinch-val').val(sq.toFixed(2));
 
-                if (section !== '') totalSq += sq;
+                if (!(isJointRow && section === '')) {
+                    totalSq += sq;
+                }
 
 
-                if (section === 'JOINT >=150' && rowAllowAuto) {
-
-                    let jointIndex = $('#sheetBody tr').filter(function() {
-                        return $(this).find('.section').val() === 'JOINT >=150';
-                    }).index($row);
+                if (isJointRow && rowAllowAuto) {
+                    let $jointRows = $('#sheetBody tr[data-joint="1"]');
+                    let jointIndex = $jointRows.index($row);
 
                     if (isNaN(wid) && widInp.val() === '') {
-                        wid = (jointIndex === 0) ? (W + 2) : (H + 2);
-                        autoFill(widInp, wid);
+                        autoFill(widInp, jointIndex === 0 ? (W + 2) : (H + 2));
                     }
 
-                    if (rowAllowAuto && isNaN(thk) && thkInp.val() === '') {
-                        thk = T;
-                        autoFill(thkInp, thk);
+                    if (isNaN(thk) && thkInp.val() === '') {
+                        autoFill(thkInp, T);
                     }
 
-                    if (rowAllowAuto && isNaN(qty) && qtyInp.val() === '') {
-                        qty = (L >= 150) ? 4 : 0;
-                        autoFill(qtyInp, qty);
+                    if (isNaN(qty) && qtyInp.val() === '') {
+                        if (jointIndex === 0) {
+                            autoFill(qtyInp, L >= 150 ? 4 : 0);
+                        } else {
+                            autoFill(qtyInp, $jointRows.first().find('.qty').val() || 0);
+                        }
                     }
                 }
 
@@ -1271,26 +1375,46 @@
             calculate(true);
         });
 
+        let mainSizeTimer = null;
+
         $(document).on('input', '#size_l,#size_w,#size_h,#size_t', function() {
 
-            // Reset all auto filled fields first
-            $('.auto-filled')
-                .prop('readonly', false)
-                .removeClass('bg-light auto-filled')
-                .data('auto', false);
+            clearTimeout(mainSizeTimer);
 
-            if (!hasMainSizeValues()) {
-                calculate(false);
-                return;
-            }
+            mainSizeTimer = setTimeout(function() {
 
-            $('#sheetBody tr').each(function() {
-                applySectionDefaults($(this));
-            });
+                if (!hasMainSizeValues()) {
+                    forceResyncFromMainSize();
+                    return;
+                }
 
-            syncLooseSupportWidth();
-            calculate(true);
+
+                forceResyncFromMainSize();
+
+            }, 150);
         });
+
+
+        // $(document).on('input', '#size_l,#size_w,#size_h,#size_t', function() {
+
+        //     // Reset all auto filled fields first
+        //     $('.auto-filled')
+        //         .prop('readonly', false)
+        //         .removeClass('bg-light auto-filled')
+        //         .data('auto', false);
+
+        //     if (!hasMainSizeValues()) {
+        //         calculate(false);
+        //         return;
+        //     }
+
+        //     $('#sheetBody tr').each(function() {
+        //         applySectionDefaults($(this));
+        //     });
+
+        //     syncLooseSupportWidth();
+        //     calculate(true);
+        // });
 
 
 
@@ -1337,16 +1461,18 @@
                 togglePlankRowStyle($(this));
             });
             ensureDefaultStructure();
+            lockAllPlankRows();
             controlSectionBattanButtons();
             createLooseSupportRow();
             syncLooseSupportWidth();
             keepSpecialRowsAtBottom();
             removeFirstEmptyRow();
+            lockMandatoryBattans();
 
+            markAutoFieldsFromDB();
             calculate(false);
         });
 
-        /* ================= BATTAN REPEATER UI ONLY ================= */
 
         function controlSectionBattanButtons() {
 
@@ -1557,6 +1683,39 @@
     </script>
 
     <script>
+        function resetAutoDependents() {
+
+            if (!hasMainSizeValues()) return;
+
+            $('#sheetBody tr').each(function() {
+
+                let $row = $(this);
+
+                if ($row.data('joint') === 1) return;
+
+                let section = $row.find('.section').val();
+
+                if (section === '') return;
+
+
+                $row.find('.length,.width,.thickness,.qty').each(function() {
+
+                    let $inp = $(this);
+
+                    if ($inp.data('auto') === true) {
+                        $inp
+                            .val('')
+                            .prop('readonly', false)
+                            .removeClass('bg-light auto-filled')
+                            .data('auto', false);
+                    }
+                });
+            });
+        }
+
+
+
+
         function ensureDefaultStructure() {
 
             let structure = {
@@ -1603,6 +1762,96 @@
 
             calculate(false);
         }
+
+        markAutoFieldsFromDB();
+
+        function markAutoFieldsFromDB() {
+
+            if (!hasMainSizeValues()) return;
+
+            let mainL = parseFloat($('#size_l').val()) || 0;
+            let mainW = parseFloat($('#size_w').val()) || 0;
+            let mainH = parseFloat($('#size_h').val()) || 0;
+            let mainT = parseFloat($('#size_t').val()) || 0;
+
+            $('#sheetBody tr').each(function() {
+
+                let $row = $(this);
+                let section = $row.find('.section').val();
+                let type = $row.find('.type').val();
+
+                if (!section || !type) return;
+
+                let $len = $row.find('.length');
+                let $wid = $row.find('.width');
+                let $thk = $row.find('.thickness');
+                let $qty = $row.find('.qty');
+
+
+                if (type === 'Planks') {
+
+                    if (
+                        (section === 'Base' || section === 'Top') &&
+                        parseFloat($len.val()) === mainL + 3
+                    ) $len.data('auto', true);
+
+                    if (
+                        (section === 'Base' || section === 'Top') &&
+                        parseFloat($wid.val()) === mainW + 2
+                    ) $wid.data('auto', true);
+
+                    if (section === 'Long Side' && parseFloat($wid.val()) === mainH)
+                        $wid.data('auto', true);
+
+                    if (section === 'Short Side' && parseFloat($len.val()) === mainW)
+                        $len.data('auto', true);
+
+                    if (parseFloat($thk.val()) === mainT)
+                        $thk.data('auto', true);
+                }
+
+
+                if (type === 'Battans') {
+
+                    if (
+                        (section === 'Base' || section === 'Top') &&
+                        parseFloat($len.val()) === mainW + 2
+                    ) $len.data('auto', true);
+
+                    if (section === 'Short Side') {
+
+                        let battanIndex = $('#sheetBody tr').filter(function() {
+                            return $(this).find('.section').val() === 'Short Side' &&
+                                $(this).find('.type').val() === 'Battans';
+                        }).index($row);
+
+                        if (battanIndex === 0 &&
+                            parseFloat($qty.val()) === qtyFromHeight(mainH)
+                        ) $qty.data('auto', true);
+                    }
+                }
+
+
+                if ($row.data('joint') === 1) {
+                    if (parseFloat($thk.val()) === mainT)
+                        $thk.data('auto', true);
+                }
+            });
+        }
+
+
+
+        function lockAllPlankRows() {
+            $('#sheetBody tr').each(function() {
+                let $row = $(this);
+                let type = $row.find('.type').val();
+
+                if (type === 'Planks') {
+                    makeRowReadonly($row);
+                }
+            });
+        }
+
 
 
         function findRows(section, type) {

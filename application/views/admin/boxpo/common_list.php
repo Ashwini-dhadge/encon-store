@@ -5,11 +5,16 @@
            justify-content: center;
            width: auto !important;
            height: auto !important;
-           min-width: 22px;
-           min-height: 22px;
-           padding: 4px 4px;
+           min-width: 26px;
+           min-height: 26px;
            margin: 6px;
            line-height: 1;
+           border: 1px solid #818181 !important;
+        }
+
+        .table td .btn:hover {
+           background-color: #48bc97 !important;
+           color: #fff !important;
         }
 
         .btn-icon {

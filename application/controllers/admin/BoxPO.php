@@ -367,43 +367,70 @@ class BoxPO extends CI_Controller
 
                 if (file_exists($baseDir . $pdfFile)) {
                     $pdfBtn = '<a href="' . base_url('uploads/boxpo/' . $pdfFile) . '" 
-                    target="_blank"
-                    class="btn btn-sm btn-primary"
-                    title="PDF">
-                    <i class="fa fa-file-pdf"></i>
-                    </a>';
+                target="_blank"
+                class="btn btn-sm btn-primary"
+                title="PDF">
+                <i class="fa fa-file-pdf"></i>
+              </a>';
                 }
 
                 $row[] = $pdfBtn;
+
 
 
                 //  <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '" 
                 //        class="btn btn-sm btn-primary" title="View">
                 //        <i class="fa fa-eye"></i>
                 //     </a>
-                $action = '
-                <div class="btn-group">
-                
-                    <a href="javascript:void(0)" 
+
+                $showAmendButton = empty($value['amendment_main_boxpo_id'])
+                    || $value['amendment_main_boxpo_id'] == 0;
+
+                $action = '<div class="btn-group">
+
+                <a href="javascript:void(0)" 
                         class="btn btn-sm btn-primary btn-view-po" data-id="' . $value['id'] . '" title="View">
                         <i class="fa fa-eye"></i>
                     </a>
-                    <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '/copy' . '" 
-                       class="btn btn-primary waves-effect waves-light btn-sm" title="Copy">
-                        <i class="fa fa-copy"></i>
-                    </a> 
 
-                    <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '" 
-                       class="btn btn-sm btn-primary" title="Edit">
-                       <i class="fa fa-edit"></i>
-                    </a> 
-                    <a href="' . base_url('admin/BoxPO/DeleteBoxPO/' . $value['id']) . '" 
-                        class="btn btn-primary waves-effect waves-light btn-sm" title="Delete" onclick="return confirm(\'Are you sure you want to delete this Box PO?\')">
-                        <i class="fa fa-trash"></i>
-                        </a>
-                </div>';
+                <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '" 
+                class="btn btn-primary btn-sm" title="Edit">
+                <i class="fa fa-edit"></i>
+                </a>
+
+
+                <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '/copy' . '" 
+                class="btn btn-primary btn-sm"
+                onclick="return confirm(\'Are you sure you want to copy this Box PO?\')"
+                title="Copy">
+                <i class="fa fa-copy"></i>
+                </a>
+
+                
+                <a href="' . base_url('admin/BoxPO/DeleteBoxPO/' . $value['id']) . '" 
+                class="btn btn-primary btn-sm"
+                onclick="return confirm(\'Are you sure you want to delete this Box PO?\')"
+                title="Delete">
+                <i class="fa fa-trash"></i>
+                </a>
+';
+
+                if ($showAmendButton) {
+                    $action .= '
+                <a href="' . base_url('admin/BoxPO/add/' . $value['id']) . '/amend' . '" 
+                class="btn btn-primary btn-sm"
+                onclick="return confirm(\'Are you sure you want to amend this Box PO?\')"
+                title="Amend">
+                Amendment
+                </a>';
+                }
+
+                $action .= '</div>';
+
+                $row[] = $action;
+
+
                 array_push($row, $action);
-
                 $rows[] = $row;
             }
         }
