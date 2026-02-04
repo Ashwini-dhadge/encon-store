@@ -1,6 +1,26 @@
 <?php
 $grouped = [];
+$lastSection = null;
+
 foreach ($dimensions as $d) {
+
+    if (!empty($d['section'])) {
+        $lastSection = $d['section'];
+    }
+
+    if (
+        empty($d['section']) &&
+        empty($d['type']) &&
+        $lastSection === 'JOINT >=150'
+    ) {
+        $grouped['JOINT >=150'][''][] = $d;
+        continue;
+    }
+
+    if (empty($d['type'])) {
+        continue;
+    }
+
     $grouped[$d['section']][$d['type']][] = $d;
 }
 ?>
@@ -177,17 +197,49 @@ if (!function_exists('v')) {
 
                 foreach ($sections as $sec):
 
-                    $isSpecial = ($sec === 'Loose Support' || $sec === 'JOINT >=150');
                     $plank   = $grouped[$sec]['Planks'][0] ?? [];
                     $battans = $grouped[$sec]['Battans'] ?? [];
                 ?>
 
-                    <?php if ($isSpecial): ?>
+                    <?php if ($sec === 'JOINT >=150'): ?>
+
+                        <?php foreach ($battans as $row): ?>
+                            <tr class="gray">
+                                <td colspan="2"><?= $sec ?></td>
+                                <td><?= v($row, 'length') ?></td>
+                                <td>X</td>
+                                <td><?= v($row, 'width') ?></td>
+                                <td>X</td>
+                                <td><?= v($row, 'thickness') ?></td>
+                                <td><?= v($row, 'qty') ?></td>
+                                <td><?= v($row, 'sq_inch') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+
+                        <?php if (!empty($grouped[$sec][''])): ?>
+                            <?php foreach ($grouped[$sec][''] as $row): ?>
+                                <tr class="gray">
+                                    <td colspan="2"></td>
+                                    <td><?= v($row, 'length') ?></td>
+                                    <td>X</td>
+                                    <td><?= v($row, 'width') ?></td>
+                                    <td>X</td>
+                                    <td><?= v($row, 'thickness') ?></td>
+                                    <td><?= v($row, 'qty') ?></td>
+                                    <td><?= v($row, 'sq_inch') ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
+                        <?php continue; ?>
+
+                    <?php continue;
+                    elseif ($sec === 'Loose Support'): ?>
 
                         <?php
                         $row = !empty($plank) ? $plank : ($battans[0] ?? []);
+                        if (empty(array_filter($row))) continue;
                         ?>
-
                         <tr class="gray">
                             <td colspan="2"><?= $sec ?></td>
                             <td><?= v($row, 'length') ?></td>
@@ -201,7 +253,6 @@ if (!function_exists('v')) {
 
                     <?php else: ?>
 
-                        <!-- PLANK ROW (ALWAYS) -->
                         <tr class="gray">
                             <td class="section"><?= $sec ?></td>
                             <td>Planks</td>
@@ -214,7 +265,6 @@ if (!function_exists('v')) {
                             <td><?= v($plank, 'sq_inch') ?></td>
                         </tr>
 
-                        <!-- BATTANS (ALWAYS 3 ROWS) -->
                         <?php for ($i = 0; $i < 3; $i++):
                             $b = $battans[$i] ?? [];
                         ?>
@@ -241,6 +291,7 @@ if (!function_exists('v')) {
                 </tr>
 
             </tbody>
+
 
         </table>
 

@@ -6,7 +6,6 @@
 
 class BoxPOModel extends CI_Model
 {
-    // country, state, city
     public function getBoxPOData(
         $search = '',
         $sortCol = 0,
@@ -40,7 +39,6 @@ class BoxPOModel extends CI_Model
             ->join('tbl_site s', 's.id = p.site_id', 'left')
             ->where('p.deleted_at IS NULL');
 
-        // WHERE conditions
         if (!empty($where)) {
             foreach ($where as $key => $val) {
                 if ($val === null) {
@@ -51,7 +49,6 @@ class BoxPOModel extends CI_Model
             }
         }
 
-        // SEARCH
         if (!empty($search)) {
             $this->db->group_start()
                 ->like('p.boxpo_order_no', $search)
@@ -61,14 +58,12 @@ class BoxPOModel extends CI_Model
                 ->group_end();
         }
 
-        // ORDER
         if (isset($columns[$sortCol])) {
             $this->db->order_by($columns[$sortCol], $sortDir);
         } else {
             $this->db->order_by('p.id', 'DESC');
         }
 
-        // LIMIT
         if ($limit > 0) {
             $this->db->limit($limit, $offset);
         }
@@ -92,46 +87,42 @@ class BoxPOModel extends CI_Model
             ->join('tbl_site s', 's.id = p.site_id', 'left')
             ->where('p.deleted_at IS NULL');
 
-        // 🔹 Vendor
         if (!empty($filters['vendor_id'])) {
             $this->db->where('p.vendor_id', $filters['vendor_id']);
         }
 
-        // 🔹 Company
         if (!empty($filters['company_id']) && $filters['company_id'] != 'all') {
             $this->db->where('p.company_id', $filters['company_id']);
         }
 
-        // 🔹 Site
         if (!empty($filters['site_id']) && $filters['site_id'] != 'all') {
             $this->db->where('p.site_id', $filters['site_id']);
         }
 
-        // 🔹 Date filters
         if (!empty($filters['on_date'])) {
             switch ($filters['on_date']) {
-                case 1: // Today
+                case 1: 
                     $this->db->where('DATE(p.boxpo_date)', date('Y-m-d'));
                     break;
 
-                case 2: // Yesterday
+                case 2: 
                     $this->db->where('DATE(p.boxpo_date)', date('Y-m-d', strtotime('-1 day')));
                     break;
 
-                case 3: // This Week
+                case 3:
                     $this->db->where('YEARWEEK(p.boxpo_date, 1)=YEARWEEK(CURDATE(), 1)');
                     break;
 
-                case 4: // This Month
+                case 4: 
                     $this->db->where('MONTH(p.boxpo_date)', date('m'));
                     $this->db->where('YEAR(p.boxpo_date)', date('Y'));
                     break;
 
-                case 5: // This Year
+                case 5: 
                     $this->db->where('YEAR(p.boxpo_date)', date('Y'));
                     break;
 
-                case 6: // Custom
+                case 6: 
                     if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
                         $this->db->where('DATE(p.boxpo_date) >=', $filters['from_date']);
                         $this->db->where('DATE(p.boxpo_date) <=', $filters['to_date']);
@@ -673,6 +664,21 @@ class BoxPOModel extends CI_Model
             ->row_array();
     }
 
+    // public function getValidDimensions($po_id)
+    // {
+    //     return $this->db
+    //         ->from('tbl_box_po_dimensions')
+    //         ->where('box_po_id', $po_id)
+    //         ->group_start()
+    //         ->where('deleted_at IS NULL', null, false)
+    //         ->or_where('deleted_at', '0000-00-00 00:00:00')
+    //         ->group_end()
+    //         ->where('section IS NOT NULL', null, false)
+    //         ->where('section !=', '')
+    //         ->where('qty >', 0)
+    //         ->get()
+    //         ->result_array();
+    // }
     public function getValidDimensions($po_id)
     {
         return $this->db
@@ -682,12 +688,12 @@ class BoxPOModel extends CI_Model
             ->where('deleted_at IS NULL', null, false)
             ->or_where('deleted_at', '0000-00-00 00:00:00')
             ->group_end()
-            ->where('section IS NOT NULL', null, false)
-            ->where('section !=', '')
             ->where('qty >', 0)
+            ->order_by('id', 'ASC')
             ->get()
             ->result_array();
     }
+
 
     public function getSite($site_id)
     {

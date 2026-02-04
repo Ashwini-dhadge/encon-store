@@ -303,11 +303,17 @@
                                         <tbody id="sheetBody">
 
                                             <?php if (!empty($dimensions)): ?>
-
+                                                <?php $prevWasJoint = false; ?>
                                                 <?php foreach ($dimensions as $d): ?>
+                                                    <?php
+                                                    $isJoint = ($d['section'] === 'JOINT >=150');
+                                                    $isBlank = empty($d['section']) && empty($d['type']);
+
+                                                    $isJointBlank = ($isBlank && $prevWasJoint);
+                                                    ?>
                                                     <tr
                                                         <?= $d['section'] === 'Loose Support' ? 'data-loose="1" class="loose-support-row"' : '' ?>
-                                                        <?= $d['section'] === 'JOINT >=150' ? 'data-joint="1" class="joint-row"' : '' ?>>
+                                                        <?= ($isJoint || $isJointBlank) ? 'data-joint="1" class="joint-row"' : '' ?>>
 
                                                         <td class="section-cell">
                                                             <select class="form-control section" name="dimension[section][]">
@@ -346,6 +352,7 @@
                                                         </td>
 
                                                     </tr>
+                                                    <?php $prevWasJoint = $isJoint; ?>
                                                 <?php endforeach; ?>
 
                                             <?php else: ?>
@@ -598,7 +605,7 @@
                 .prop('disabled', true);
 
             $row2.find('.type')
-                .val('Battans')
+                .val('')
                 .prop('disabled', true);
 
             $row2.find('.length,.width,.thickness,.qty')
@@ -607,7 +614,6 @@
                 .removeClass('bg-light auto-filled')
                 .data('auto', true);
 
-            // Disable buttons
             $row2.find('button').prop('disabled', true);
 
             updateRowLayout($row2);
@@ -626,7 +632,6 @@
             $row.find('select')
                 .prop('disabled', true);
 
-            // ✅ disable buttons but DO NOT hide
             // $row.find('button')
             //     .prop('disabled', true);
         }
@@ -1828,6 +1833,27 @@
                         if (battanIndex === 0 &&
                             parseFloat($qty.val()) === qtyFromHeight(mainH)
                         ) $qty.data('auto', true);
+                    }
+                }
+                if (type === 'Planks' && section === 'Long Side') {
+
+                    if (parseFloat($len.val()) === mainL + 3) {
+                        $len.data('auto', true);
+                    }
+
+                    if (parseFloat($wid.val()) === mainH) {
+                        $wid.data('auto', true);
+                    }
+
+                    if (parseFloat($thk.val()) === mainT) {
+                        $thk.data('auto', true);
+                    }
+                }
+
+                if (type === 'Battans' && section === 'Long Side') {
+
+                    if (parseFloat($len.val()) === mainH + 5) {
+                        $len.data('auto', true);
                     }
                 }
 

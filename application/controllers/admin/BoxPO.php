@@ -489,7 +489,6 @@ class BoxPO extends CI_Controller
             // die();
         }
 
-        // COPY
         if (!empty($id) && $type === 'copy') {
 
             $data['po_info'] = $this->db
@@ -700,7 +699,8 @@ class BoxPO extends CI_Controller
                     'thickness' => $thickness,
                     'qty'       => $qty,
                     'sq_inch'   => $sq,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => userId(),
                 ];
             }
 
@@ -767,7 +767,10 @@ class BoxPO extends CI_Controller
         ]);
 
 
-
+        $mpdf->useSubstitutions = false;
+        $mpdf->simpleTables = true;      // 🔥 important
+        $mpdf->packTableData = false;    // 🔥 important
+        
         $mpdf->SetTitle('BOX PO');
         $mpdf->SetAuthor('ERP');
         $mpdf->SetDisplayMode('fullpage');
@@ -784,7 +787,6 @@ class BoxPO extends CI_Controller
             mkdir($dir, 0777, true);
         }
 
-        // ---------------- PDF FILE NAME LOGIC ----------------
 
         if (!empty($po['amendment_main_boxpo_id'])) {
 
@@ -793,12 +795,10 @@ class BoxPO extends CI_Controller
 
             $fileName = 'BOX_PO_AMENDMENT_' . $baseId . '_' . $amendNo . '.pdf';
 
-            // 2️⃣ Copy
         } elseif ($type === 3) {
 
             $fileName = 'BOX_PO_COPY_' . $boxPoId . '.pdf';
 
-            // 3️⃣ Normal PO (add / edit)
         } else {
 
             $fileName = 'BOX_PO_' . $boxPoId . '.pdf';
@@ -806,10 +806,8 @@ class BoxPO extends CI_Controller
 
         $filePath = $dir . $fileName;
 
-        // Save PDF
         $mpdf->Output($filePath, 'F');
 
-        // Ajax / normal flow
         if ($isAjax) {
             echo json_encode([
                 'status'  => true,
