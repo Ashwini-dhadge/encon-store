@@ -37,13 +37,11 @@ function filter_itemgroup(){
 
        columns: [        
           { "width": "5%", title: "Sr._No.", orderable:false },
+           
           { "width": "5%", title: "Item Group Name" }, 
-          { "width": "10%", title: "Item Type" },
-          
+           { "width": "10%", title: "Item Type" },
           //  { "width": "10%", title: "Parent Group" },
             { "width": "10%", title: "Primary Group" },
-            {  title: "Created By" ,width:"10%" },
-          
           { "width": "10%", title: "Action" , orderable:false, "className": "text-center"},
       ],
      

@@ -14,7 +14,7 @@ function items_filter(){
   function listItems(data='') {
     
      items = $('#items_tbl').DataTable({
-            "dom": 'Bfl<"topbutton">tip',
+            "dom": 'fl<"topbutton">tip',
               oLanguage: {
                 sProcessing: '<div class="dt-loader"></div'
               },
@@ -22,10 +22,6 @@ function items_filter(){
               serverSide: true,
               destroy: true,
               pageLength: 25,
-              lengthMenu: [
-                                [10, 25, 50, -1],
-                                [10, 25, 50, 'All']
-                            ],
               order: [[0, "desc"]],
       ajax: {
           url: base_url +'admin/master/Items/listItems',
@@ -37,42 +33,18 @@ function items_filter(){
 
       columns: [        
           { title: "Sr._No.", orderable:false, width:"5%"},
-          {  title: "Item Name" ,width:"20%"},  
+          {  title: "Item Name" ,width:"40%"},  
           {  title: "Short Name",width:"15%" },
-            {  title: "Item Code",width:"5%" },
           {  title: "Hsn Code",width:"5%" },
         // {  title: "Item Group" },
           {  title: "Stock Unit" ,width:"5%" },
           {  title: "Item Group" ,width:"5%" },
           {  title: "Rate" ,width:"5%" },
-          {  title: "Created By" ,width:"10%" },
-          {  title: "Updated By" ,width:"5%" },
           {  title: "Action" , orderable:false, "className": "text-center"},
       ],
       render: function ( data, type, row ) {
         return '<span style="white-space:nowrap">' + data + "</span>";
-        },
-        buttons: [
-        {
-            extend: 'excelHtml5',
-            text: 'Export Excel',
-            filename: 'exported_data',
-            exportOptions: {
-                modifier: {
-                    pageLength: -1 // Export all pages
-                }
-            }
-        },
-         {
-            extend: 'pdfHtml5',
-            text: 'Export pdf',
-            filename: 'exported_data',
-            exportOptions: {
-                columns: [0, 1, 2, 3, 4, 5, 6],
-            }
-        },
-        'colvis'
-    ],
+        }
      
     });
 

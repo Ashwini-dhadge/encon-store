@@ -64,6 +64,7 @@
                                        $vendorId=$grn_info['vendor_id'];
                                        $id=$grn_info['id'];
                                        $grn_number=$grn_info['grn_no'];
+                                       $grn_order_sequence=$grn_info['grn_order_sequence'];
                                        $grn_date=date('d/m/Y',strtotime($grn_info['grn_date']));
                                        $grn_time=date('H:m',strtotime($grn_info['grn_time']));
                                        

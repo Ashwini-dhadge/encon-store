@@ -420,4 +420,107 @@ public function generate_pdf_backup() {
         }  
         echo json_encode($json);
     }
+     public function deleteSiteZeroStockData1()
+    {
+        $site_id = 39;
+        $deleted_by = userId(); // Current user ID
+        $deleted_at = date('Y-m-d H:i:s');
+        $deleted_reason = "As of 05-01-2026, all data starting with zero stock has been deleted from the backend.";
+        
+        $response = array();
+         
+        try {
+            // 1. Soft delete material_issue records
+            $this->db->update('tbl_material_issue', array(
+                'deleted_by' => $deleted_by,
+                'deleted_at' => $deleted_at,
+                'deleted_reason' => $deleted_reason
+            ), array('site_id' => $site_id));
+            
+            $response['material_issue_deleted'] = $this->db->affected_rows();
+            
+            // 2. Soft delete material_issue_items_details records with JOIN to get items from site_id 39
+            $sql = "UPDATE tbl_material_issue_items_details i 
+                    JOIN tbl_material_issue m ON m.id = i.issue_id 
+                    SET i.deleted_by = ?, i.deleted_at = ? 
+                    WHERE m.site_id = ?";
+            
+            $this->db->query($sql, array($deleted_by, $deleted_at, $site_id));
+            $response['material_issue_items_details_deleted'] = $this->db->affected_rows();
+            
+            
+            // 4. Soft delete items_opening_stock records
+            $this->db->update('tbl_items_opening_stock', array(
+                'deleted_by' => $deleted_by,
+                'deleted_at' => $deleted_at
+            ), array('site_id' => $site_id));
+            
+            $response['items_opening_stock_deleted'] = $this->db->affected_rows();
+            
+            // 5. Soft delete items_opening_stock_details records with JOIN to get items from site_id 39
+            $sql_opening = "UPDATE tbl_items_opening_stock_details osd 
+                            JOIN tbl_items_opening_stock os ON os.id = osd.opening_id 
+                            SET osd.deleted_by = ?, osd.deleted_at = ? 
+                            WHERE os.site_id = ?";
+            
+            $this->db->query($sql_opening, array($deleted_by, $deleted_at, $site_id));
+            $response['items_opening_stock_details_deleted'] = $this->db->affected_rows();
+           
+            // 6. Soft delete GRN records
+            $this->db->update('tbl_grn', array(
+                'deleted_by' => $deleted_by,
+                'deleted_at' => $deleted_at,
+                'deleted_reason' => $deleted_reason
+            ), array('site_id' => $site_id));
+            
+            $response['grn_deleted'] = $this->db->affected_rows();
+            
+            // 7. Soft delete GRN items details records with JOIN to get items from site_id 39
+            $sql_grn = "UPDATE tbl_grn_items_details gid 
+                        JOIN tbl_grn g ON g.id = gid.grn_id 
+                        SET gid.deleted_by = ?, gid.deleted_at = ? 
+                        WHERE g.site_id = ?";
+            
+            $this->db->query($sql_grn, array($deleted_by, $deleted_at, $site_id));
+            $response['grn_items_details_deleted'] = $this->db->affected_rows();
+            
+            // 8. Soft delete recevied_material_issue records
+            $this->db->update('tbl_recevied_material_issue', array(
+                'deleted_by' => $deleted_by,
+                'deleted_at' => $deleted_at,
+                'deleted_reason' => $deleted_reason
+            ), array('site_id' => $site_id));
+            
+            $response['recevied_material_issue_deleted'] = $this->db->affected_rows();
+            
+            // 9. Soft delete recevied_material_issue_items_details records with JOIN to get items from site_id 39
+            $sql_received = "UPDATE tbl_recevied_material_issue_items_details rid 
+                             JOIN tbl_recevied_material_issue r ON r.id = rid.received_id 
+                             SET rid.deleted_by = ?, rid.deleted_at = ? 
+                             WHERE r.site_id = ?";
+            
+            $this->db->query($sql_received, array($deleted_by, $deleted_at, $site_id));
+            $response['recevied_material_issue_items_details_deleted'] = $this->db->affected_rows();
+
+            
+            // 10. Hard delete inventory_details records where is_deleted = 1
+            $this->db->delete('tbl_items_inventory', array('site_id' => $site_id));
+            $response['inventory_details_deleted'] = $this->db->affected_rows();
+            
+            // 11. Hard delete stock_inventory records
+              $this->db->update('tbl_items_inventory_details', array(
+                'is_deleted' => $deleted_by               
+            ), array('site_id' => $site_id));           
+            $response['stock_inventory_deleted'] = $this->db->affected_rows();
+            
+            $response['status'] = 'success';
+            $response['message'] = 'Zero stock data deleted successfully';
+                       
+        } catch (Exception $e) {
+            $response['status'] = 'error';
+            $response['message'] = $e->getMessage();
+        }
+        
+        echo json_encode($response);
+    }
 }

@@ -53,6 +53,7 @@ class Vendor extends CI_Controller
             
                     $row = []; 
                      array_push($row, $offset + ($key + 1));
+                    array_push($row, $value['vendor_code']);
                     array_push($row, $value['account_name']);
                     array_push($row, $value['contact_person_email']);
                     array_push($row, $value['contact_person_mobile_no']);

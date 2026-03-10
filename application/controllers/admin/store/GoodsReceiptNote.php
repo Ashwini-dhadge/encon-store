@@ -220,6 +220,8 @@ class GoodsReceiptNote extends CI_Controller
                                 unset($insert['site_id']);
                                 unset($insert['company_id']);
                                 unset($insert['financial_year_id']);
+                                unset($insert['grn_no']);
+                                unset($insert['grn_order_sequence']);
                                 $insert['updated_at'] = date('Y-m-d');
                                 $insert['updated_by'] = userId();
                                 $this->CommonModel->iudAction('tbl_grn', $insert, 'update', array('id' => $post['id']));
@@ -1067,13 +1069,13 @@ class GoodsReceiptNote extends CI_Controller
                 $getItemQty=getQuickInventoryAmount($item['item_id'],$item['item_unit_id'],$grn_data['company_id'],$grn_data['site_id'],$grn_data['financial_year_id'],$item['batch_no'],$item['expired_date'],0);
                 if($item['received_qty'] > $getItemQty){
                     $flag=1;
-                     echo "<br>getItemQty".$getItemQty;die;
+                    //  echo "<br>getItemQty".$getItemQty;die;
                 }
              }
              if(isset($grn_data['po_id'])&& !empty($grn_data['po_id'])){
                 //   echo $flag;
                 //   echo "<br>".$grn_data['po_id'];die;
-                $flag=0;
+                $flag=1;
              }
           
              if($flag==1){

@@ -1301,11 +1301,11 @@ class PO extends CI_Controller
        // echo $htmlContent1;die;
        
        if(empty($cc_array)){
-          $cc_array=array('ramkrushna@encongroup.in','enconrksharma@gmail.com');
+          $cc_array=array('procurement@encongroup.in','enconrksharma@gmail.com');
        }else{
-          if(!in_array("ramkrushna@encongroup.in", $cc_array))
+          if(!in_array("procurement@encongroup.in", $cc_array))
           {
-              array_push($cc_array,"ramkrushna@encongroup.in");
+              array_push($cc_array,"procurement@encongroup.in");
           }
           
            if(!in_array("enconrksharma@gmail.com", $cc_array))
