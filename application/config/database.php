@@ -64,12 +64,12 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	   => '',
-	'hostname' => '127.0.0.1:3310',
+	'hostname' => 'localhost',
 //	'username' => 'wetap_harshad',
 //	'password' => 'harshad@123',
- 	'username' => 'root',
-	'password' => '',
-	// 'database' => 'encongroup_open_tender',
+ 	'username' => 'encongroup_erp',
+	'password' => 'encongroup_erp',
+    // 'database' => 'encongroup_open_tender',
 	'database' => 'encongroup_erp',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
