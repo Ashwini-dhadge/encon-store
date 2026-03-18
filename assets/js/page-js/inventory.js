@@ -10,6 +10,8 @@ function inventory_filter(){
             'companyid': companyid,
             'site_id': site_id, 
             'inventory_item_id': inventory_item_id,
+            'id_itemgroup': $('#id_itemgroup').val(),
+            'is_reserve_stock': $('#is_reserve_stock').val(),
           };
 
 

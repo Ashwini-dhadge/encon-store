@@ -153,7 +153,7 @@
                                  <li><a href="<?= base_url('admin/master/Site') ?>">Site</a></li>
                                  <li><a href="<?= base_url('admin/master/ItemGroup') ?>">Item Group</a></li>
                                  <li><a href="<?= base_url('admin/master/Items') ?>">Items Master</a></li>
-                                 <li><a href="<?= base_url('admin/master/TermCondition') ?>">Term/Condition Master</a></li>
+                                 <li><a href="<?= base_url('admin/master/TermCondition') ?>">Terms/Condition Master</a></li>
                                  <li><a href="<?= base_url('admin/master/EmailTemplate') ?>">Email Template Master</a></li>
 
                              <?php

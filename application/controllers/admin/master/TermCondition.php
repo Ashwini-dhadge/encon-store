@@ -14,7 +14,7 @@ class TermCondition extends CI_Controller
 
     public function index()
     {
-        $data['title'] = 'TermCondition Master';
+        $data['title'] = 'Terms and Condition Master';
        
       $this->load->view(ADMIN.'master/Termcondition/list_termcondition',$data);
     }

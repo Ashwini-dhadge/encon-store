@@ -257,7 +257,7 @@ function getSiteData(){
 
 $('.vender_name').select2({
     ajax: {
-        url:base_url +'admin/Common/listvender_name',       
+        url: base_url +'admin/Vendor/listVendorName',       
             dataType: 'json',
             delay: 250,
             data: function (data) {

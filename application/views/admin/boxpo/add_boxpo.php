@@ -178,13 +178,7 @@
                                             <div class="form-group row">
                                                 <label class="control-label text-right col-md-4">vendor </label>
                                                 <div class="col-md-8">
-                                                    <select class="form-control get_vendor" name="vendor_id">
-                                                        <?php foreach ($vendors as $vendor): ?>
-                                                            <option value="<?= $vendor['id']; ?>"
-                                                                <?= (!empty($po_info) && $po_info['vendor_id'] == $vendor['id']) ? 'selected' : '' ?>>
-                                                                <?= $vendor['account_name']; ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
+                                                    <select class="form-control custom-select select2 get_vendor" style="width:100%" name="vendor_id" id="vendor_id" required>
                                                     </select>
 
                                                     <label id="vendor_id-error" class="error" for="vendor_id"></label>

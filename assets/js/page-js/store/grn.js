@@ -1,220 +1,277 @@
-   console.log("type="+$('#type').val())
+console.log("type=" + $('#type').val())
 
 function isEmpty(value) {
     return value === undefined || value === null || value === '' || isNaN(value);
 }
- $(document).ready(function() {
+$(document).ready(function () {
     po_filter();
     grn_filter();
-      $('.on_date').hide();
+    $('.on_date').hide();
 });
-function po_filter(){  
-    var data = {    
-                    'vendor_id':$("#vendor_id").val(),
-                    'company_id':$("#company_id").val(),
-                    'site_id':$("#site_id").val(),
-                    'on_date':$("#on_date").val(),
-                    'from_date':$("#from_date").val(),
-                    'to_date':$("#to_date").val(),
-       };
+function po_filter() {
+    var data = {
+        'vendor_id': $("#vendor_id").val(),
+        'company_id': $("#company_id").val(),
+        'site_id': $("#site_id").val(),
+        'on_date': $("#on_date").val(),
+        'from_date': $("#from_date").val(),
+        'to_date': $("#to_date").val(),
+    };
     listPO(data);
-  }
-  function grn_filter(){  
-    var data = {    
-                    'vendor_id':$("#vendor_id").val(),
-                    'company_id':$("#company_id").val(),
-                    'site_id':$("#site_id").val(),
-                    'on_date':$("#on_date").val(),
-                    'from_date':$("#from_date").val(),
-                    'to_date':$("#to_date").val(),
-       };
+}
+function grn_filter() {
+    var data = {
+        'vendor_id': $("#vendor_id").val(),
+        'company_id': $("#company_id").val(),
+        'site_id': $("#site_id").val(),
+        'on_date': $("#on_date").val(),
+        'from_date': $("#from_date").val(),
+        'to_date': $("#to_date").val(),
+        'is_delete_id': $("#is_delete_id").val(),
+
+    };
     listGRN(data);
-  }
+}
 
-  var vendor = '';
-  function listPO(data='') {
-    
-     vendor = $('#tbl_po').DataTable({
-            "dom": 'fl<"topbutton">tip',
-              oLanguage: {
-                sProcessing: '<div class="dt-loader"></div'
-              },
-              processing : true,
-              serverSide: true,
-              destroy: true,
-              pageLength: 25,
-              order: [[0, "desc"]],
-      ajax: {
-          url: base_url +'admin/store/GoodsReceiptNote/listPo',
-          type: 'POST',
-          dataSrc: "data",
-          data:data,
-      },
-      columnDefs: [{responsivePriority: 1 ,targets: 5}],
+var vendor = '';
+function listPO(data = '') {
 
-      columns: [        
-          { title: "Sr._No.", orderable:false },
-          {  title: "PO Order No" },  
-          {  title: "Po Date" },
-          {  title: "Vendor Name" },
-          {  title: "Delivery Site" },
-          {  title: "Total Item Qty" },
-          {  title: "Total Pending Qty" },          
-          {  title: "Status" },         
-          {  title: "Action" , orderable:false, "className": "text-center"},
-      ],
-     
+    vendor = $('#tbl_po').DataTable({
+        "dom": 'fl<"topbutton">tip',
+        oLanguage: {
+            sProcessing: '<div class="dt-loader"></div'
+        },
+        processing: true,
+        serverSide: true,
+        destroy: true,
+        pageLength: 25,
+        order: [[0, "desc"]],
+        ajax: {
+            url: base_url + 'admin/store/GoodsReceiptNote/listPo',
+            type: 'POST',
+            dataSrc: "data",
+            data: data,
+        },
+        columnDefs: [{ responsivePriority: 1, targets: 5 }],
+
+        columns: [
+            { title: "Sr._No.", orderable: false },
+            { title: "PO Order No" },
+            { title: "Po Date" },
+            { title: "Vendor Name" },
+            { title: "Delivery Site" },
+            { title: "Total Item Qty" },
+            { title: "Total Pending Qty" },
+            { title: "Status" },
+            { title: "Action", orderable: false, "className": "text-center" },
+        ],
+
     });
 
-  }
+}
 
-  function listGRN(data='') {
-    
-     vendor = $('#tbl_grn_list').DataTable({
-            "dom": 'fl<"topbutton">tip',
-              oLanguage: {
-                sProcessing: '<div class="dt-loader"></div'
-              },
-              processing : true,
-              serverSide: true,
-              destroy: true,
-              pageLength: 25,
-              order: [[0, "desc"]],
-      ajax: {
-          url: base_url +'admin/store/GoodsReceiptNote/listGRN',
-          type: 'POST',
-          dataSrc: "data",
-          data:data,
-      },
-      columnDefs: [{responsivePriority: 1 ,targets: 5}],
+function listGRN(data = '') {
 
-      columns: [        
-          { title: "Sr._No.", orderable:false },
-          {  title: "GRN Order No" },  
-          {  title: "GRN Date" },
-          {  title: "Vendor Name" },
-          {  title: "Location Site" },
-          {  title: "Total Item Qty" },         
+    vendor = $('#tbl_grn_list').DataTable({
+        "dom": 'fl<"topbutton">tip',
+        oLanguage: {
+            sProcessing: '<div class="dt-loader"></div'
+        },
+        processing: true,
+        serverSide: true,
+        destroy: true,
+        pageLength: 25,
+        order: [[0, "desc"]],
+        ajax: {
+            url: base_url + 'admin/store/GoodsReceiptNote/listGRN',
+            type: 'POST',
+            dataSrc: "data",
+            data: data,
+        },
+        columnDefs: [{ responsivePriority: 1, targets: 5 }],
 
-           {  title: "Action" , orderable:false, "className": "text-center"},
-      ],
-     
+        columns: [
+            { title: "Sr._No.", orderable: false },
+            { title: "GRN Order No" },
+            { title: "GRN Date" },
+            { title: "Vendor Name" },
+            { title: "Location Site" },
+            { title: "Total Item Qty" },
+
+            { title: "Action", orderable: false, "className": "text-center" },
+        ],
+
     });
 
-  }
+}
 
 
-  $("#on_date").change(function () {
-        var on_date = $('#on_date').val();
-        // alert(on_date);
-           if (on_date != 6) {
-              po_filter1();
-              $('.on_date').hide();
-            }else{
-              $('.on_date').show();
+$("#on_date").change(function () {
+    var on_date = $('#on_date').val();
+    // alert(on_date);
+    if (on_date != 6) {
+        po_filter1();
+        $('.on_date').hide();
+    } else {
+        $('.on_date').show();
+    }
+});
+
+
+$("#submitBtn").on("click", function (event) {
+    event.preventDefault();
+
+    var allVendorIdsSame = true;
+    var allDeliveryIdsSame = true;
+    var firstVendorId;
+    var firstDeliverySiteId;
+    var idsArray = [];
+    let cnt = 0;
+
+    // Iterate over checkboxes to check if all vendor IDs are the same
+    $(".checkbox_grn_po").each(function (index) {
+
+        var isChecked = $(this).prop("checked");
+        if (isChecked) {
+            cnt = cnt + 1;
+            var currentVendorId = $(this).data("vendor_id");
+            var delivery_site_id = $(this).data("delivery_site_id");
+            var po_id = $(this).data("po_id");
+            idsArray.push(po_id);
+
+            if (index === 0) {
+                firstVendorId = currentVendorId;
+                firstDeliverySiteId = delivery_site_id
+            } else {
+                if (currentVendorId !== firstVendorId) {
+                    allVendorIdsSame = false;
+                    return false;
+                }
+                if (delivery_site_id !== firstDeliverySiteId) {
+                    allDeliveryIdsSame = false;
+                    return false;
+                }
             }
-       });
-
-
- $("#submitBtn").on("click", function(event) {
-        event.preventDefault();
-
-        var allVendorIdsSame = true;
-        var allDeliveryIdsSame = true;
-        var firstVendorId;
-        var firstDeliverySiteId;
-        var idsArray = [];
-        let cnt=0;
-
-                 // Iterate over checkboxes to check if all vendor IDs are the same
-        $(".checkbox_grn_po").each(function(index) {
-           
-             var isChecked = $(this).prop("checked");
-             if(isChecked){
-                 cnt=cnt+1;
-                   var currentVendorId = $(this).data("vendor_id");
-                    var delivery_site_id = $(this).data("delivery_site_id");
-                    var po_id = $(this).data("po_id");
-                    idsArray.push(po_id);
-
-                    if (index === 0) {
-                        firstVendorId = currentVendorId;
-                        firstDeliverySiteId=delivery_site_id
-                    } else {
-                        if (currentVendorId !== firstVendorId) {
-                            allVendorIdsSame = false;
-                            return false;
-                        }
-                        if (delivery_site_id !== firstDeliverySiteId) {
-                            allDeliveryIdsSame = false;
-                            return false;
-                        }
-                    }
-             }
-          
-        });
-      
-        // If all vendor IDs are the same, submit the form
-        if (allVendorIdsSame&& allDeliveryIdsSame && cnt!=0) {
-            $("<input>").attr({
-                type: "hidden",
-                name: "po_ids",
-                value: idsArray
-            }).appendTo("#myForm");
-
-            $("#myForm").submit();
-        } else {
-            if(cnt==0){
-                alert(" Select checkbox");
-            }else if(! allVendorIdsSame){
-                alert(" Selected vendor Should be same!");
-            }else{
-                alert(" Selected Delivery Site Address Should be same!");
-            }
-            
         }
+
     });
+
+    // If all vendor IDs are the same, submit the form
+    if (allVendorIdsSame && allDeliveryIdsSame && cnt != 0) {
+        $("<input>").attr({
+            type: "hidden",
+            name: "po_ids",
+            value: idsArray
+        }).appendTo("#myForm");
+
+        $("#myForm").submit();
+    } else {
+        if (cnt == 0) {
+            alert(" Select checkbox");
+        } else if (!allVendorIdsSame) {
+            alert(" Selected vendor Should be same!");
+        } else {
+            alert(" Selected Delivery Site Address Should be same!");
+        }
+
+    }
+});
 $('#vendor_id').select2({
-            // placeholder: 'Select an state',
-            ajax: {
-                url:base_url +'admin/Vendor/listVendorName',       
-                dataType: 'json',
-                delay: 250,
-                data: function (data) {
-           
-                    return {
-                        searchTerm: data.term                       
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results:response
-                    };
-                },
-                cache: true
-            }
+    // placeholder: 'Select an state',
+    ajax: {
+        url: base_url + 'admin/Vendor/listVendorName',
+        dataType: 'json',
+        delay: 250,
+        data: function (data) {
+
+            return {
+                searchTerm: data.term
+            };
+        },
+        processResults: function (response) {
+            return {
+                results: response
+            };
+        },
+        cache: true
+    }
 });
 
 $('#site_id').select2({
-            // placeholder: 'Select an state',
-            ajax: {
-                url:base_url +'admin/Common/listSite',       
-                dataType: 'json',
-                delay: 250,
-                data: function (data) {
-           
-                    return {
-                        searchTerm: data.term,
-                        company_id:$('#company_id').val()
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results:response
-                    };
-                },
-                cache: true
-            }
+    // placeholder: 'Select an state',
+    ajax: {
+        url: base_url + 'admin/Common/listSite',
+        dataType: 'json',
+        delay: 250,
+        data: function (data) {
+
+            return {
+                searchTerm: data.term,
+                company_id: $('#company_id').val()
+            };
+        },
+        processResults: function (response) {
+            return {
+                results: response
+            };
+        },
+        cache: true
+    }
 
 
+});
+
+$(document).ready(function () {
+    $("#tbl_po tbody").on("click", "tr img", function (event) {
+        var id = $(this).data("id");
+        event.preventDefault(); // Prevent the default action of the link
+        var tr = $(this).closest("tr");
+        var row = tbl_po.row(tr);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass("shown");
+        } else {
+            $.ajax({
+                url: base_url + "admin/store/GoodsReceiptNote/poInnearItemTableData",
+                type: "GET",
+                data: { id: id },
+                dataType: "json",
+                success: function (response) {
+                    innerTable = response.html;
+                    row.child(innerTable).show();
+                    tr.addClass("shown");
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+            });
+        }
+    });
+    $("#tbl_grn_list tbody").on("click", "tr img", function (event) {
+        var id = $(this).data("id");
+        event.preventDefault(); // Prevent the default action of the link
+        var tr = $(this).closest("tr");
+        var row = vendor.row(tr);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass("shown");
+        } else {
+            $.ajax({
+                url: base_url + "admin/store/GoodsReceiptNote/grnInnearItemTableData",
+                type: "GET",
+                data: { id: id },
+                dataType: "json",
+                success: function (response) {
+                    innerTable = response.html;
+                    row.child(innerTable).show();
+                    tr.addClass("shown");
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+            });
+        }
+    });
 });

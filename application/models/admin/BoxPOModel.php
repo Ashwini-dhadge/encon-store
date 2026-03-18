@@ -30,6 +30,7 @@ class BoxPOModel extends CI_Model
             ->select('
             p.*,
             v.account_name AS vendor_name,
+            v.vendor_code,
             c.name AS company_name,
             s.site_name
         ')
@@ -551,6 +552,7 @@ class BoxPOModel extends CI_Model
         $this->db->select('
         vm.id,
         vm.account_name AS vendor_name,
+        vm.vendor_code,
         vm.company_id,
         vm.site_id,
 

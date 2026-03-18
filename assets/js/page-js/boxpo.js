@@ -293,3 +293,19 @@ $(document).on('click', '.btn-view-po', function () {
         }
     });
 });
+
+$.ajax({
+    url: base_url + 'admin/Vendor/listVendorName',
+    type: "post",
+    dataType: 'json',
+    success: function (response) {
+
+        if (response) {
+            $(".get_vendor").select2({
+                data: response
+            })
+            $("#delivery_party_id").select2("val", deliveryPartyId);
+            $("#vendor_id").select2("val", vendorId);
+        }
+    }
+});

@@ -39,7 +39,6 @@
            <label>Vendor</label>
            <select class="form-control custom-select select2 get_vendor" style="width:100%" name="vendor_id" id="vendor_id" onchange="po_filter()" required>
               <option value="">Select</option>
-              <option value="all">All</option>
 
            </select>
         </div>

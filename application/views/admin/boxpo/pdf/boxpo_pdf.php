@@ -138,7 +138,9 @@ if (!function_exists('v')) {
             <tr>
                 <td width="50%" class="left" style="border-right:none;">
                     <strong>To,</strong><br>
-                    <strong><?= $vendor['vendor_name'] ?? '' ?></strong><br>
+                    <strong>
+                        <?= isset($vendor['vendor_name']) ? $vendor['vendor_name'] . ' (' . $vendor['vendor_code'] . ')' : '' ?>
+                    </strong><br>
                     <?= $vendor['address_details'] ?? '' ?><br>
                     <?= $vendor['pincode'] ?? '' ?><br>
                     <strong>State :</strong> <?= $vendor['state_name'] ?? '' ?><br>

@@ -39,6 +39,7 @@ function vendor_filter(){
 
       columns: [        
           { title: "Sr._No.", orderable:false },
+          {  title: "Vendor Code" },  
           {  title: "Vendor Name" },  
           {  title: "Email" },
           {  title: "Phone No" },
