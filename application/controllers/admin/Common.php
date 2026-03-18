@@ -39,9 +39,9 @@ class Common extends CI_Controller
         $result2 = [];
         foreach ($getData as $key => $value) {
             if ($value['id'] == userId('financial_year_id')) {
-                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['from_date'])) . "-" . date('y', strtotime($value['to_date'])), 'selected' => true];
+                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['to_date'])) . "-" . date('y', strtotime($value['from_date'])), 'selected' => true];
             } else {
-                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['from_date'])) . "-" . date('y', strtotime($value['to_date']))];
+                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['to_date'])) . "-" . date('y', strtotime($value['from_date']))];
             }
         }
 
@@ -66,7 +66,7 @@ class Common extends CI_Controller
                 'site_id' => $post['common_company_site_data'],
                 'financial_year_id' => $post['common_financial_year'],
                 'company_site_name' => $getCompanyDataSite['company_name'] . "-" . $getDataSite['short_name'],
-                'company_financial_year' => date('d/m/Y', strtotime($getFinancialYear['from_date'])) . "-" . date('d/m/Y', strtotime($getFinancialYear['to_date'])),
+                'company_financial_year' => date('Y', strtotime($getFinancialYear['to_date'])) . "-" . date('y', strtotime($getFinancialYear['from_date'])),
                 'site_inital' => $getDataSite['site_inital']
             );
             $this->session->set_userdata($session);
