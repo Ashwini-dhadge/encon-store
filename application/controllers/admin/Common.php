@@ -39,11 +39,12 @@ class Common extends CI_Controller
         $result2 = [];
         foreach ($getData as $key => $value) {
             if ($value['id'] == userId('financial_year_id')) {
-                $result2[] = ['id' => $value['id'], 'text' => date('d/m/Y', strtotime($value['from_date'])) . "-" . date('d/m/Y', strtotime($value['to_date'])), 'selected' => true];
+                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['from_date'])) . "-" . date('y', strtotime($value['to_date'])), 'selected' => true];
             } else {
-                $result2[] = ['id' => $value['id'], 'text' => date('d/m/Y', strtotime($value['from_date'])) . "-" . date('d/m/Y', strtotime($value['to_date']))];
+                $result2[] = ['id' => $value['id'], 'text' => date('Y', strtotime($value['from_date'])) . "-" . date('y', strtotime($value['to_date']))];
             }
         }
+
         $response['result'] = true;
         $response['data'] = $result1;
         $response['data1'] = $result2;
