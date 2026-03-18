@@ -204,6 +204,7 @@ class ItemApprovedRate extends CI_Controller
 
 
          $count = count($this->ItemApprovedRateModel->getAprovedItemData($searchVal,0,0,0,0,0,$where));
+        //  echo $this->db->last_query();die;
          if($count){
              $result = $this->ItemApprovedRateModel->getAprovedItemData($searchVal, $sortColIndex, $sortBy, $limit, $offset,0,$where);
                foreach ($result as $key => $value) {

@@ -361,7 +361,7 @@
                         </tr>
                          <tr>
                         <td width="50%" align="left"><span >Prices&nbsp;:&nbsp;<?= isset($prices)?$prices :'N.A'; ?></span></td>
-                        <td  width="50%"><span>Packing & Forwarding :&nbsp;:&nbsp; </span></td>
+                        <td  width="50%"><span>Packing & Forwarding :<?= isset($packing_forwarding)?$packing_forwarding :'N.A'; ?> </span></td>
                         </tr>
                           <tr>
                         <td width="50%" align="left"><span >Trans & Insur:&nbsp;&nbsp;0.00</span></td>

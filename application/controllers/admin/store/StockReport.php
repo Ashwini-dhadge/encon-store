@@ -420,13 +420,7 @@ public function generate_pdf_backup() {
         }  
         echo json_encode($json);
     }
-
-    /**
-     * Delete zero stock data from site id 39
-     * Performs soft delete on material_issue, material_item, grm, grn
-     * Performs hard delete on stock_inventory and inventory_details
-     */
-    public function deleteSiteZeroStockData()
+     public function deleteSiteZeroStockData1()
     {
         $site_id = 39;
         $deleted_by = userId(); // Current user ID

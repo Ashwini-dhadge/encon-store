@@ -52,7 +52,7 @@
                            <?php
                               $grn_date=date('d/m/Y');
                               $grn_time=date('H:m');
-                              // echo  $grn_info['grn_date'];die;
+                             //  echo  $grn_info['grn_date'];die;
                            // print_r($grn_info);die;
                               //type 1: direct GRN 2: GRn ahinst PO
                                     if($type==2 || $type==3){
@@ -76,7 +76,7 @@
                                         
                                     }
                                     
-                                    // echo $grn_number;die;
+                                    // echo $grn_date;die;
                               ?>
                            <input type="hidden" name="po_id" id="po_id" value="<?= isset($po_id)?$po_id:"" ?>">
                            <input type="hidden" name="vendorId" id="vendorId" value="<?= isset($vendorId)?$vendorId:"" ?>">

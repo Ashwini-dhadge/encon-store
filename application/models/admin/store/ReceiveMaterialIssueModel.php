@@ -35,7 +35,7 @@
             
             // echo $subquery_sql;die;
             
-            $this->db->select('p.*,s.short_name as location_site_name,s1.short_name as to_location_site_name,p.id as recevie_material_issue_id');
+            $this->db->select('p.*,s.short_name as location_site_name,s1.short_name as to_location_site_name');
             
             $this->db->join('tbl_site s','s.id=p.issue_location_site_id');
             $this->db->join('tbl_site s1','s1.id=p.issue_to_location_site_id');

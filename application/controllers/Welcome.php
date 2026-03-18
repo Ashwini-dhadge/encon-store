@@ -9,6 +9,7 @@ class Welcome extends CI_Controller {
         {
                 parent::__construct();
                 $this->load->model(ADMIN . 'POModel');
+                 $this->load->library('phpmailer_lib');
                
         }
 	public function index()
@@ -362,5 +363,10 @@ foreach ($companies as $company) {
     }
     echo "<pre>";
     print_r($result);die;
+    }
+    
+    public function sendMailCheck(){
+        $res1= sendMailByPhpMailer('ashwini@windhans.com','testemail', "Test");
+        print_r($res1);die;
     }
 }

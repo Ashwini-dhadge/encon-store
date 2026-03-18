@@ -478,7 +478,6 @@ class ReceiveMaterials extends CI_Controller
                                 $recevied_item_id=$this->CommonModel->iudAction('tbl_recevied_material_issue_items_details',$material_issue,'insert');
                                 
                                 $recveied_company_ids= $this->CommonModel->getData('tbl_site',array('id'=>$post['received_location_site_id']),'id,company_id','','row_array');
-
                                 
                                 // echo "pending_qty".$pending_qty."<br>";
                                 if($pending_qty!=0){
@@ -791,7 +790,7 @@ class ReceiveMaterials extends CI_Controller
         }
         echo json_encode($response);
 	}
-    function getTrasfterMaterialInternaly(){
+	 function getTrasfterMaterialInternaly2(){
        
         $site_id = 39;
         $where['p.issue_to_location_site_id'] = $site_id;
@@ -836,7 +835,7 @@ class ReceiveMaterials extends CI_Controller
                             $is_complete_transfer=1;
                             $issue_transfer_status=1;          
                             
-                        
+                         if($item_unit_id && $item_id && $batch_no && $expired_date && $expired_date!='0000-00-00'){
                             $row_data = array('issue_id'=> $value['id'],'issue_item_id'=>$value1['id'],'item_id' => $item_id,'item_unit_id'=>$item_unit_id,'company_id'=>$company_id,'site_id'=>$site_id,'financial_year_id'=>$value['financial_year_id'],'batch_no'=>$batch_no,'expired_date'=>$expired_date,'is_reserve_stock'=>1,'issue_qty'=>$value1['issue_qty']);
                               
                            $dataQty = $this->CommonModel->getData('tbl_items_inventory', array('item_id' => $item_id,'item_unit_id'=>$item_unit_id,'company_id'=>$company_id,'site_id'=>$site_id,'financial_year_id'=>$value['financial_year_id'],'batch_no'=>$batch_no,'expired_date'=>$expired_date,'is_reserve_stock'=>1),'id,qty','','row_array');
@@ -869,15 +868,15 @@ class ReceiveMaterials extends CI_Controller
                             $data_discard['inv_qty']=$row_data['inv_qty']; 
                             $data_discard['inv_balance']=$balance; 
 
-                             $this->CommonModel->iudAction('tbl_material_issue_items_details', array('is_transfer_completed'=>1,'updated_by'=>userId(),'updated_at'=>date('Y-m-d')), 'update', array('issue_id'=>$value['id'],'item_group_id'=>$value1['item_group_id'],'item_id'=>$item_id,'batch_no'=>$batch_no,'expired_date'=>$expired_date));
+                            $this->CommonModel->iudAction('tbl_material_issue_items_details', array('is_transfer_completed'=>1,'updated_by'=>userId(),'updated_at'=>date('Y-m-d')), 'update', array('issue_id'=>$value['id'],'item_group_id'=>$value1['item_group_id'],'item_id'=>$item_id,'batch_no'=>$batch_no,'expired_date'=>$expired_date));
                             $this->CommonModel->iudAction('tbl_material_issue', array('is_transfer_completed'=>1,'updated_by'=>userId(),'updated_at'=>date('Y-m-d')), 'update', array('id' => $value['id']));
                             
-                            if($item_unit_id && $item_id && $batch_no && $expired_date){
+                           
                             $total++;
 
                            
                                 // insert in discard items details table
-                                unset($data_discard['id']);
+                            unset($data_discard['id']);
                             $discard_item_id=$this->CommonModel->iudAction('tbl_material_issue_discard_items_details', $data_discard, 'insert');
                             
 
@@ -886,7 +885,7 @@ class ReceiveMaterials extends CI_Controller
                                         'item_unit_id'=>$item_unit_id,
                                         'user_id'=>$user_id,
                                         'type'=>7,
-                                        'ref_id'=>$material_issue_discard_id,
+                                         'ref_id'=>$material_issue_discard_id,
                                         'action'=>INVENTORY_ACTION_ISSUE_MINUS,
                                         'qty'=>$balance,
                                         'company_id'=>$company_id,
@@ -895,7 +894,7 @@ class ReceiveMaterials extends CI_Controller
                                         'batch_no'=>$batch_no,
                                         'expired_date'=>$expired_date,
                                         'is_reserve_stock'=>1,
-                                        'sub_ref_id'=>$discard_item_id
+                                         'sub_ref_id'=>$discard_item_id
                             );
                             // echo "<pre>";
                             // print_r($inst);die;
