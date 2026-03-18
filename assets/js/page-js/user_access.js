@@ -252,7 +252,7 @@ function getUserAccessData(user_id) {
                                                     ! parseInt(response.data_user_access[i].edit)==1 &&
                                                     ! parseInt(response.data_user_access[i].delete)==1){
                                                     
-                                                    //$('.selectAll_'+module_id).prop('disabled','disabled');
+                                                    $('.selectAll_'+module_id).prop('disabled','disabled');
                                                 }
                                          
                             }

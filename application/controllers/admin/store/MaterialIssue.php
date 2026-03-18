@@ -19,8 +19,9 @@ class MaterialIssue extends CI_Controller
     public function index()
     {
         $data['title'] = 'MaterialIssue';
-       
-      $this->load->view(ADMIN.'store/materialissue/list_materialissue',$data);
+        $data['company_master'] = $this->CommonModel->getData('tbl_company_master', array('is_active' => 1));
+
+        $this->load->view(ADMIN.'store/materialissue/list_materialissue',$data);
     }
 
    public function list_material_issue()

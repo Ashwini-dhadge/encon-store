@@ -60,7 +60,7 @@
                             <div class="card-body">
                                 <div class="d-flex p-10 no-block">
                                     <div class="align-slef-center">
-                                        <h2 class="m-b-0">$6,759</h2>
+                                        <h2 class="m-b-0">₹ 6,759</h2>
                                         <h6 class="text-muted m-b-0">This Week</h6>
                                     </div>
                                     <div class="align-self-center display-6 ml-auto"><i class="text-info icon-Dollar-Sign"></i></div>

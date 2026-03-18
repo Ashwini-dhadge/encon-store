@@ -22,7 +22,7 @@
  
      <!--  <a href="<?= base_url('admin/UserAccess/add_user');?>" class="btn btn-info btn-theme"><i class="fa fa-plus-circle"></i> Create Site</a> -->
   	  <button type="button" class="btn btn-info btn-theme termconditionModal" data-toggle="modal" data-target="#termconditionModal" ><i class="fa fa-plus-circle"></i>
-             Create Termcondition
+             Create Terms and condition
                </button>
    </div>   
 </div>

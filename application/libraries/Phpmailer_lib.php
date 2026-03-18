@@ -3,10 +3,9 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 require APPPATH . 'third_party/PHPMailer/PHPMailerAutoload.php';
 
+#[\AllowDynamicProperties]
 class Phpmailer_lib
 {
-    private $ci;
-    private $mail;
     public function __construct()
     {
         $this->ci = &get_instance();

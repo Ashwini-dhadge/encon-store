@@ -35,11 +35,10 @@ function filter_site(){
 
        columns: [        
           { "width": "5%", title: "Sr._No.", orderable:false },
+           
           { "width": "5%", title: "Company" }, 
-          { "width": "10%", title: "Site Name" },
-          { "width": "5%", title: "Site Short" },
-          { "width": "5%", title: "Site Initial" },
-          { "width": "10%", title: "Site Address" },
+           { "width": "10%", title: "Site Name" },
+            { "width": "10%", title: "Site Address" },
           // { "width": "10%", title: "District Name" },rto_code
           { "width": "10%", title: "Action" , orderable:false, "className": "text-center"},
       ],

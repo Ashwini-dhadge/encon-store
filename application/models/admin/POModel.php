@@ -443,7 +443,7 @@ class POModel extends CI_Model
         }
          public function getViewPoData($po_id=''){
 
-        $this->db->select('p.*,p.company_id as company_po_id,vm.account_name as vendor_name,s.site_name as billing_site_name,ds.site_name as delivery_site_name,vp.account_name as delivery_party_name,vmp1.address_details as delivery_party_address,vm.*,vmp.*,c.name as vendor_city_name,sv.name as state_name,u.first_name as created_first_name,u.last_name as created_last_name,up.signature_image as created_signature_image ,u1.first_name as approved_first_name,u1.last_name as approved_last_name ,p.id,cm.name as company_name,cm.address as company_address,cs.site_name as po_site_name,ds.site_address,p.remark as po_remark,cs.site_address as po_site_address, p.approved_by,up1.signature_image as approved_by_signature_image');
+        $this->db->select('p.*,p.company_id as company_po_id,vm.account_name as vendor_name,vm.vendor_code,s.site_name as billing_site_name,ds.site_name as delivery_site_name,vp.account_name as delivery_party_name,vmp1.address_details as delivery_party_address,vm.*,vmp.*,c.name as vendor_city_name,sv.name as state_name,u.first_name as created_first_name,u.last_name as created_last_name,up.signature_image as created_signature_image ,u1.first_name as approved_first_name,u1.last_name as approved_last_name ,p.id,cm.name as company_name,cm.address as company_address,cs.site_name as po_site_name,ds.site_address,p.remark as po_remark,cs.site_address as po_site_address, p.approved_by,up1.signature_image as approved_by_signature_image');
         $this->db->join('tbl_vendor_master vm','vm.id=p.vendor_id');
         $this->db->join('tbl_site s','s.id=p.billing_site_id','left');
         $this->db->join('tbl_site ds','ds.id=p.delivery_site_id','left');

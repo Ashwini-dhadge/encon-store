@@ -48,11 +48,11 @@ function calculatePOItem(element,type=0) {
     let item_unit_rate= parseFloat($('input[name="items['+row_index+'][item_unit_rate]"]').val());
     let item_rate_type= parseInt($('select[name="items['+row_index+'][item_rate_type]"]').val());
     let discount_type= parseInt($('select[name="items['+row_index+'][discount_type]"]').val());
-    let discount_percent= parseFloat($('input[name="items['+row_index+'][discount_percent]"]').val());
-    let tax_rate= parseFloat($('input[name="items['+row_index+'][tax_rate]"]').val());
+    let discount_percent= parseInt($('input[name="items['+row_index+'][discount_percent]"]').val());
+    let tax_rate= parseInt($('input[name="items['+row_index+'][tax_rate]"]').val());
     let tax_id= parseInt($('select[name="items['+row_index+'][tax_id]"]').val());
    
-    let additional_tax_rate= parseFloat($('input[name="items['+row_index+'][additional_tax_rate]"]').val());
+    let additional_tax_rate= parseInt($('input[name="items['+row_index+'][additional_tax_rate]"]').val());
     let additional_tax_id= parseInt($('select[name="items['+row_index+'][additional_tax_id]"]').val());
 
  
@@ -60,7 +60,7 @@ function calculatePOItem(element,type=0) {
    
     if(!isEmpty(item_unit_rate) && !isEmpty(item_unit_rate)&& ( !isEmpty(item_weight) || !isEmpty(item_qty)) &&  !isEmpty(row_index)){
 
-        if((item_rate_type==2  && !isEmpty(item_unit_rate)) || (item_rate_type==1 && !isEmpty(item_qty) && !isEmpty(item_unit_rate))){
+        if((item_rate_type==2 && !isEmpty(item_weight) && !isEmpty(item_unit_rate)) || (item_rate_type==1 && !isEmpty(item_qty) && !isEmpty(item_unit_rate))){
                 if(item_rate_type==2){
                     item_rate=parseFloat(item_weight*item_unit_rate).toFixed(2);
                 }else{
@@ -88,8 +88,6 @@ function calculatePOItem(element,type=0) {
                 if(!isEmpty(tax_rate) && tax_rate!=0 &&  !isEmpty(tax_id) && !isEmpty(item_sub_amount)){
                     tax_amount=parseFloat(item_sub_amount*(tax_rate/100)).toFixed(2);
                     $('input[name="items['+row_index+'][tax_value]"]').val(tax_amount);
-                }else{
-                    $('input[name="items['+row_index+'][tax_value]"]').val(0);
                 }
 
 
@@ -116,11 +114,11 @@ function calculatePOItem(element,type=0) {
 }
 function calculateTotal(){
     let total_qty=total_tax_rate=total_additional_tax_rate=final_amount_total=0;
-    let total_rate=total_discount_amount=0;
+    let total_rate=discount_amount=0;
 
      $(".po_items_select").each(function() {
             
-           // console.log($(this))
+            console.log($(this))
             element_name=$(this)[0].name;            
             var match = element_name.match(/\[([^\]]+)\]/);
             var x = match ? match[1] : null;
@@ -135,14 +133,13 @@ function calculateTotal(){
                 if(item_unit !== "" && !isNaN(item_unit) && !isEmpty(item_unit) ){
                     total_qty=parseFloat(total_qty)+parseFloat(item_unit);
                 }
-                 //console.log("total_qty"+total_qty)   
+                 console.log("total_qty"+total_qty)   
                 if(item_rate !== "" && !isNaN(item_rate) && !isEmpty(item_rate) ){
                     total_rate=parseFloat(total_rate)+parseFloat(item_rate);
                 }
                 if(discount_amount !== "" && !isNaN(discount_amount) && !isEmpty(discount_amount) ){
-                    total_discount_amount=parseFloat(total_discount_amount)+parseFloat(discount_amount);
+                    discount_amount=parseFloat(discount_amount)+parseFloat(discount_amount);
                 }
-                  console.log("discount_amount"+total_discount_amount)
 
             let tax_value =parseFloat($('input[name="items['+x+'][tax_value]"]').val()).toFixed(2);
                 if(tax_value !== "" && !isNaN(tax_value) && !isEmpty(tax_value) ){
@@ -163,10 +160,10 @@ function calculateTotal(){
                 
     
     });
-       console.log(total_qty)
+      // console.log(total_qty)
      $('#total_qty').val(total_qty);
      $('#total_item_rate').val(total_rate);
-     $('#total_discount_amount').val(total_discount_amount);
+     $('#total_discount_amount').val(discount_amount);
      $('#total_tax_rate').val(total_tax_rate);
      $('#total_additional_tax_rate').val(total_additional_tax_rate);
      $('#final_amount_total').val(final_amount_total);
@@ -201,9 +198,7 @@ function calculateTotal(){
     }
      $('#freight_additional_tax_amount').val(freight_additional_tax_amount);
 
-    //  packing and forwarding
- //   let packing_forwarding_amount= parseFloat($('#packing_forwarding_amount').val());
-    
+
      //
     let n_tax_amount= parseFloat($('#n_tax_amount').val());
     let new_tax_rate= parseFloat($('#new_tax_rate').val());
@@ -225,9 +220,9 @@ function calculateTotal(){
     let service_tax_rate= parseFloat($('#service_tax_rate').val());
   
     let service_tax_amount=0;
-  //  console.log("service_charge_type="+service_charge_type_val);
+    console.log("service_charge_type="+service_charge_type_val);
     if(service_charge_type_val==1){
-      //  console.log("service_charge_type="+service_charge_type_val);
+        console.log("service_charge_type="+service_charge_type_val);
          if(!isEmpty(service_charge_amount) && service_charge_amount!=0 &&  !isEmpty(service_tax_rate) && !isEmpty(service_tax_rate)){
             service_tax_amount=parseFloat(service_charge_amount*(service_tax_rate/100)).toFixed(2);       
         }
@@ -278,15 +273,10 @@ function calculateTotal(){
     if(!isEmpty(service_tax_amount)){
         po_final_amount=Number(po_final_amount)+Number(service_tax_amount);
     }
-    //   if(!isEmpty(packing_forwarding_amount)){
-    //     po_final_amount=Number(po_final_amount)+Number(packing_forwarding_amount);
-    // }
     // console.log("po_final_amount="+po_final_amount);
     if(!isEmpty(final_discount_amount)){
         po_final_amount=Number(po_final_amount)-Number(final_discount_amount);
     }
-    
-   
     // console.log("po_final_amount="+po_final_amount);
 
      po_final_amount1=Math.round(po_final_amount);

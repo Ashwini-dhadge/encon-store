@@ -206,7 +206,7 @@
 		      $response['result'] = true;
 		      $response['reason'] = 'Data Found';
 		    }else{
-		      $response['result'] = fasle;
+		      $response['result'] = false;
 		      $response['reason'] = 'Something went to wrong!';
 		    }
 		    echo json_encode($response);
