@@ -8,7 +8,7 @@ $(document).ready(function () {
             "checkbox-input": ["A", "B"],
             "radio-input": "B"
         },
-        isFirstItemUndeletable: true,
+        // isFirstItemUndeletable: true,
          show: function () {
                 var EmptyInputs = CheckEmptyInputs1();
                 console.log("EmptyInputs="+EmptyInputs);
@@ -47,6 +47,7 @@ $(document).ready(function () {
                     $newItem1.find('.select2-container').remove();
                     $newItem1.find('.item_group_select2').removeAttr('disabled').val(null).trigger('change');
                     $newItem1.find('.po_items_select').removeAttr('disabled').empty();
+                    $newItem1.find('.refesh_block').removeAttr('style');
                     $newItem1.find('select.select2').each(function() {
                         if ($(this).hasClass('select2-hidden-accessible')) {
                                 $(this).removeAttr("data-select2-id").removeClass('select2-hidden-accessible').next('.select2-container').remove();
@@ -100,7 +101,7 @@ $(document).ready(function () {
                                             }
                                     });
                     });
-                    setPreviousItem($newItem1)
+                     setPreviousItem($newItem1)
                      getDeleteRowDublicate();
                 }
         },
@@ -148,7 +149,7 @@ $(document).ready(function () {
 
 
 function getItemGroup(){
-
+console.log("sd");
 $('.item_group_select2').select2({
             // placeholder: 'Select an state',
             ajax: {
@@ -243,7 +244,7 @@ function CheckEmptyInputs1() {
                         
                 //     if(!isEmpty(grn_item_id) && grn_item_id!=0){
                    
-                        if(isEmpty(item_group_id)  && item_group_id!='all') {
+                        if(isEmpty(item_group_id) && item_group_id!='all') {
                              console.log("item_group_id="+item_group_id)
                             empty_count++;
                         }
@@ -252,7 +253,7 @@ function CheckEmptyInputs1() {
                             empty_count++;
                         }
                     
-                        if (isEmpty(item_rate)) {
+                       if (isEmpty(item_rate) || item_rate==0.00 || item_rate==0 || item_rate==0.0 ) {
                              console.log("item_rate="+item_rate)
                             empty_count++;
                         }
@@ -333,7 +334,4 @@ function setPreviousItem(item){
           }                
       }
     });
-  
- 
-   
 }

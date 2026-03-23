@@ -82,7 +82,8 @@ $(document).ready(function () {
                                 }
                             });
                             $newItem1.find('.vender_name').select2({
-                                   ajax: {
+                           
+                                        ajax: {
                                             url:base_url +'admin/Common/listvender_name',       
                                                 dataType: 'json',
                                                 delay: 250,
@@ -98,10 +99,24 @@ $(document).ready(function () {
                                                 },
                                                 cache: true
                                             }
-                                    });
+                            });
+                              $newItem1.find('.po_item_cal').on('blur', function(evt) {
+                                    var element = evt.target;
+                                    calculatePOItem(element);
+                                });
+                               
+                                    
                     });
                     setPreviousItem($newItem1)
                      getDeleteRowDublicate();
+                     
+                      $('.po_item_cal').on('blur', function(evt) {
+                            var element = evt.target;
+                            calculatePOItem(element);
+                        });
+                        $('.po_item_cal_final').on('blur', function(evt) {
+                            calculateTotal()
+                        });
                 }
         },
         hide: function (e) {
@@ -148,7 +163,7 @@ $(document).ready(function () {
 
 
 function getItemGroup(){
-
+console.log("sd");
 $('.item_group_select2').select2({
             // placeholder: 'Select an state',
             ajax: {
@@ -230,20 +245,15 @@ function CheckEmptyInputs1() {
                     console.log("empty_count_name="+element_name)
                     console.log("style="+style)
                      console.log("x="+x)
-                    let item_group_id =($('select[name="material_items['+x+'][item_group_id]"]').val());
-                    let items_id =($('select[name="material_items['+x+'][items_id]"]').val());                  
-                    let item_rate =($('input[name="material_items['+x+'][item_unit]"]').val())
-                    let batch_no =($('select[name="material_items['+x+'][batch_no]"]').val())
-                    // let item_final_amount =($('input[name="items['+x+'][item_final_amount]"]').val())
-                    
-                //     let grn_item_id=$('input[name="items['+x+'][grn_item_id]"]').val();
-                  
-                     
+                    let item_group_id =($('select[name="items['+x+'][item_group_id]"]').val());
+                    let items_id =($('select[name="items['+x+'][items_id]"]').val());                  
+                    let item_rate =($('input[name="items['+x+'][item_unit_rate]"]').val())
+                   
                         
                         
                 //     if(!isEmpty(grn_item_id) && grn_item_id!=0){
                    
-                        if(isEmpty(item_group_id)  && item_group_id!='all') {
+                        if(isEmpty(item_group_id) &&  item_group_id!='all') {
                              console.log("item_group_id="+item_group_id)
                             empty_count++;
                         }
@@ -251,16 +261,12 @@ function CheckEmptyInputs1() {
                              console.log("items_id="+items_id)
                             empty_count++;
                         }
-                    
-                        if (isEmpty(item_rate)) {
+                       //console.log("item_rate="+item_rate)
+                        if (isEmpty(item_rate) || item_rate==0.00 || item_rate==0 || item_rate==0.0 ) {
                              console.log("item_rate="+item_rate)
                             empty_count++;
                         }
-                        if (batch_no === "" || batch_no === null || batch_no === undefined) {
-                              console.log("batch_no="+batch_no)
-                            empty_count++;
-                        }
-                        
+                       
                 }
                 
 
@@ -311,6 +317,9 @@ function CheckTotalItems() {
             });
             return empty_count;
 }
+function isEmpty(value) {
+    return value === undefined || value === null || value === '' || isNaN(value);
+}
 function setPreviousItem(item){
     var element_name = item.find('.item_group_select2').attr("name");
     var match = element_name.match(/\[([^\]]+)\]/);
@@ -322,12 +331,12 @@ function setPreviousItem(item){
       success: function(response) {
         
           if(response){
-            $('select[name="material_items['+current_row+'][item_group_id]"]').select2({                       
+            $('select[name="items['+current_row+'][item_group_id]"]').select2({                       
                   data: response
             })       
-            let prev_item_group_id =($('select[name="material_items[0][item_group_id]"]').val());
-            $('select[name="material_items['+current_row+'][item_group_id]"]').val(prev_item_group_id); // Select the option with a value of '1'
-            $('select[name="material_items['+current_row+'][item_group_id]"]').trigger('change'); 
+            let prev_item_group_id =($('select[name="items[0][item_group_id]"]').val());
+            $('select[name="items['+current_row+'][item_group_id]"]').val(prev_item_group_id); // Select the option with a value of '1'
+            $('select[name="items['+current_row+'][item_group_id]"]').trigger('change'); 
             
             
           }                

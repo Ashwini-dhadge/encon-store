@@ -49,7 +49,6 @@ File: scss
 
 /* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
 
-
 /* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
 
 @import url("https://fonts.cdnfonts.com/css/segoe-ui-4");
@@ -130,7 +129,7 @@ h4,
 h5,
 h6 {
   color: #455a64;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Segoe UI", sans-serif;
   font-weight: 400;
 }
 
@@ -1439,11 +1438,11 @@ File: scss
   line-height: 70px;
   display: inline-block;
 }
-.topbar .top-navbar .navbar-nav > .nav-item > .nav-link {
+/* .topbar .top-navbar .navbar-nav > .nav-item > .nav-link {
   padding-right: 15px;
   font-size: 17px;
   line-height: 54px;
-}
+} */
 .topbar .top-navbar .navbar-nav > .nav-item > span {
   line-height: 65px;
   font-size: 24px;
@@ -1456,8 +1455,9 @@ File: scss
 }
 .topbar .profile-pic {
   width: 30px;
-  padding-bottom: 28px;
-  padding-right: 3px;
+  border-radius: 50%;
+  /* padding-bottom: 28px;
+  padding-right: 3px; */
 }
 .topbar .dropdown-menu {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
@@ -3613,6 +3613,7 @@ File Upload
   margin-right: 10px;
 }
 
+
 .btn-circle.right-side-toggle {
   position: fixed;
   top: 1rem;
@@ -3620,6 +3621,17 @@ File Upload
   z-index: 10;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
+
+@media (max-width: 938px) {
+  .btn-circle.right-side-toggle {
+    position: fixed;
+    top: 3.1rem;
+    right: 18px;
+    z-index: 10;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  }
+}
+
 
 /*Form Validation*/
 .help-block ul {

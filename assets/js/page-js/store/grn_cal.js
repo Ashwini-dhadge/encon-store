@@ -2,15 +2,15 @@ $('.po_item_cal').on('keydown', function(evt) {
   if (evt.key === 'Tab' || evt.key === 'Enter') {
     evt.preventDefault();
     // alert("sd")
-   calculatePOItem(this)
+  // calculatePOItem(this)
   }
 });
 $('.po_item_cal').on('blur', function(evt) {
     var element = evt.target;
-    calculatePOItem(element);
+    //calculatePOItem(element);
 });
 $('.po_item_cal_final').on('blur', function(evt) {
-    calculateTotal()
+    // calculateTotal()
 });
 
 
@@ -18,7 +18,7 @@ $('.po_item_cal_final').on('keydown', function(evt) {
   //if (evt.key === 'Tab' || evt.key === 'Enter') {
 //    evt.preventDefault();
     // alert("sd")
-   calculateTotal()
+//   calculateTotal()
   //}
 });
 
@@ -26,7 +26,7 @@ function calculatePOItemEvent(evt,element) {
     if (evt.key === 'Tab' || evt.key === 'Enter') {
     evt.preventDefault();
     // alert("sd")
-   calculatePOItem(element)
+//   calculatePOItem(element)
   }
 }
 
@@ -37,7 +37,7 @@ function add_value(element,type) {
 
         // Access the data attribute
         var tax_rate = selectedOption.data("tax_rate");
-         console.log(tax_rate)
+        //  console.log(tax_rate)
         var name = element.name;  
         
         var match = name.match(/\[([^\]]+)\]/);
@@ -73,8 +73,10 @@ function getItemList(items){
 
     // Extract the content between the brackets (including the brackets)
     var row_index = match ? match[1] : null;
- console.log("row_index="+row_index)
+    console.log("row_index="+row_index)
+    $('select[name="items['+row_index+'][items_id]"]').empty();
     var selectElement = $('select[name="items['+row_index+'][items_id]"]');
+    if(!isEmpty(items.value) || (items.value =='all')){
      $.ajax({
               url: base_url + 'admin/PO/getItemData',
               type: "post",  
@@ -83,11 +85,28 @@ function getItemList(items){
               success: function(response) {
                 // console.log(response.data)
                   if(response.result){
-                    selectElement.select2({                         
-                          data: response.data
-                        })
+                     selectElement.select2({
+                        data: response.data,
+                        minimumInputLength: 0,
+                        matcher: function(params, data) {
+
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+
+
+                            if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1 ||
+                                data.item_code.toString().indexOf(params.term) > -1) {
+                                return data;
+                            }
+
+                            // If the search term doesn't match the item code or text, return null to exclude the option
+                            return null;
+                        }
+                    });
                    
-                    
+                      var defaultValues = ["", ""];
+                    selectElement.val(defaultValues).trigger('change.select2');
                   }else{
                     alert_float('danger', response.reasons);
                   }
@@ -95,6 +114,10 @@ function getItemList(items){
                 
               }
           });
+    }else{
+        var defaultValues = ["", ""];
+         selectElement.val(defaultValues).trigger('change.select2');
+    }
 }
 function getItemUnits(items) {
      var name = items.name;
@@ -132,56 +155,69 @@ function getItemUnits(items) {
                         var length_unit = $('select[name="items['+row_index+'][length_unit]"]');
                         var return_qty_unit = $('select[name="items['+row_index+'][return_qty_unit]"]');
                         var item_unit_id = $('select[name="items['+row_index+'][item_unit_id]"]');
-
+                            item_unit_id.empty();
+                            po_total_pending_qty_unit.empty();
+                            po_challan_qty_unit.empty();
+                            po_received_qty_unit.empty();
+                            po_rejected_qty_unit.empty();
+                            received_unit.empty();
+                            weight_unit.empty();
+                            length_unit.empty();
+                            return_qty_unit.empty();
                             // Append new options to the <select> element
                             $.each( response.data, function (index, option) {
+                                
+                              
                                 item_unit_id.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                                        
+                               
                                 po_total_pending_qty_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                                
+                              
                                  po_challan_qty_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                                
+                               
                                   po_received_qty_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
 
-
+                               
                                    po_rejected_qty_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                               
                                     received_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                                
                                      weight_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                                
                                       length_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
-
+                               
                                        return_qty_unit.append($('<option>', {
                                             value: option.item_unit_id,
                                             text: option.short_name
                                         }));
 
-                                       return_qty_unit
+                                    //   return_qty_unit
                             });
 
 
@@ -202,34 +238,72 @@ function isEmpty(value) {
 function getCopytoReceviedQty(element){
         var name = element.name;         
         var match = name.match(/\[([^\]]+)\]/);
-         var row_index = match ? match[1] : null;
-        var po_received_qty = $('input[name="items['+row_index+'][po_received_qty]"]').val();
-        var po_total_pending_qty = $('input[name="items['+row_index+'][po_save_pending_qty]"]').val();
-        if(parseInt(po_received_qty) && parseInt(po_total_pending_qty)){
-           let po_excess_qty=parseInt(po_received_qty)-parseInt(po_total_pending_qty);
-           // console.log(po_excess_qty);
-           if(po_excess_qty >= 1){
-                $('input[name="items['+row_index+'][po_excess_qty]"]').val(po_excess_qty);
-           }else{
-                 $('input[name="items['+row_index+'][po_excess_qty]"]').val(0);
-           }
+        var row_index = match ? match[1] : null;
+        let is_grn_update=$("#is_grn_update").val();
+        let po_id=$("#po_id").val();
+        
+        var po_old_received_qty = $('input[name="items['+row_index+'][old_received_qty]"]').val();
+        
+        if(is_grn_update==1 && !isEmpty(po_id) && !isEmpty(po_old_received_qty)){
+            var po_received_qty = parseFloat($('input[name="items['+row_index+'][po_received_qty]"]').val());
+            var po_main_received_qty = parseFloat($('input[name="items['+row_index+'][po_main_received_qty]"]').val());
+            var po_total_pending_qty = parseInt($('input[name="items['+row_index+'][po_main_pending_qty]"]').val());
+            var po_main_total_qty = parseInt($('input[name="items['+row_index+'][po_main_total_qty]"]').val());
+            
+            let new_excess_qty=new_qty=new_qty1=0;
+            // if(po_main_received_qty > po_main_total_qty){
+            //     new_excess_qty=po_main_received_qty-po_main_total_qty;
+            // }
+            new_qty=po_received_qty-po_old_received_qty
+            console.log("new_qty"+new_qty);
+            received_qty= po_main_received_qty+new_qty;
+            console.log("po_main_received_qty"+po_main_received_qty)
+            console.log("new_qty"+new_qty)
+             console.log("new_qty"+received_qty)
+            //minus from main qty
+            new_qty=po_main_total_qty-received_qty;
+            if(received_qty >= po_main_total_qty){
+                new_excess_qty=received_qty-po_main_total_qty;
+                new_pending_qty=0;
+            }else{
+                 new_excess_qty=0;
+                new_pending_qty=po_main_total_qty-received_qty;
+            }
+            
+            $('input[name="items['+row_index+'][po_excess_qty]"]').val(new_excess_qty);
+            $('input[name="items['+row_index+'][po_total_pending_qty]"]').val(new_pending_qty);
+            $('input[name="items['+row_index+'][received_qty]"]').val(po_received_qty);
+               
         }else{
-                 $('input[name="items['+row_index+'][po_excess_qty]"]').val(0);
+            var po_received_qty = $('input[name="items['+row_index+'][po_received_qty]"]').val();
+            var po_total_pending_qty = $('input[name="items['+row_index+'][po_save_pending_qty]"]').val();
+            if(parseFloat(po_received_qty) && parseInt(po_total_pending_qty)){
+               let po_excess_qty=parseFloat(po_received_qty)-parseInt(po_total_pending_qty);
+               // console.log(po_excess_qty);
+               if(po_excess_qty >= 1){
+                    $('input[name="items['+row_index+'][po_excess_qty]"]').val(po_excess_qty);
+               }else{
+                     $('input[name="items['+row_index+'][po_excess_qty]"]').val(0);
+               }
+            }else{
+                     $('input[name="items['+row_index+'][po_excess_qty]"]').val(0);
+            }
+            
+             if(parseFloat(po_received_qty) && parseInt(po_total_pending_qty)){
+               let po_pendng_qty=parseInt(po_total_pending_qty)-parseFloat(po_received_qty);
+               // console.log(po_pendng_qty)
+               if(po_pendng_qty <= 0){
+                    $('input[name="items['+row_index+'][po_total_pending_qty]"]').val(0);
+               }else{
+                     $('input[name="items['+row_index+'][po_total_pending_qty]"]').val(po_pendng_qty);
+               }
         }
         
-         if(parseInt(po_received_qty) && parseInt(po_total_pending_qty)){
-           let po_pendng_qty=parseInt(po_total_pending_qty)-parseInt(po_received_qty);
-           // console.log(po_pendng_qty)
-           if(po_pendng_qty <= 0){
-                $('input[name="items['+row_index+'][po_total_pending_qty]"]').val(0);
-           }else{
-                 $('input[name="items['+row_index+'][po_total_pending_qty]"]').val(po_pendng_qty);
-           }
-           
+            $('input[name="items['+row_index+'][received_qty]"]').val(po_received_qty);
            
         }
-        $('input[name="items['+row_index+'][received_qty]"]').val(po_received_qty);
-        console.log(po_received_qty)
+       
+        // console.log(po_received_qty)
 }
 function showRejectReasons(element) {
         var name = element.name;         
@@ -264,7 +338,7 @@ function calculatePOItem(element,type=0) {
     let item_unit_rate= parseFloat($('input[name="items['+row_index+'][item_unit_rate]"]').val());
     let item_rate_type= parseInt($('select[name="items['+row_index+'][item_unit_type]"]').val());
     let discount_type= parseInt($('select[name="items['+row_index+'][discount_type]"]').val());
-    let discount_percent= parseInt($('input[name="items['+row_index+'][discount_percent]"]').val());
+    let discount_percent= parseFloat($('input[name="items['+row_index+'][discount_percent]"]').val());
     let tax_rate= parseInt($('input[name="items['+row_index+'][tax_rate]"]').val());
     let tax_id= parseInt($('select[name="items['+row_index+'][tax_id]"]').val());
     let tax_type= parseInt($('select[name="items['+row_index+'][gst_type]"]').val());
@@ -283,7 +357,7 @@ function calculatePOItem(element,type=0) {
 
     //tax_type= 1:value 2:qty 3:weight
    
-   
+    // console.log("item_unit_rate"+item_unit_rate)
     if(!isEmpty(item_unit_rate) && !isEmpty(item_rate_type) && ( !isEmpty(item_weight) || !isEmpty(item_qty) ) &&  !isEmpty(row_index)){
 
         if((item_rate_type==2 && !isEmpty(item_weight) && !isEmpty(item_unit_rate)) || (item_rate_type==1 && !isEmpty(item_qty) && !isEmpty(item_unit_rate))){
@@ -326,7 +400,7 @@ function calculatePOItem(element,type=0) {
                 //calcuate tax rate
                 
                 if(!isEmpty(tax_rate) && tax_rate!=0 &&  !isEmpty(tax_id) && (!isEmpty(item_sub_amount) || !isEmpty(item_qty) || !isEmpty(item_weight))){
-                console.log("gst_type"+tax_type)
+                // console.log("gst_type"+tax_type)
                    if(tax_type==2){
                         tax_amount=parseFloat(item_qty*tax_rate).toFixed(2);
                    }else if(tax_type==3){
@@ -370,9 +444,11 @@ function calculateTotal(){
             element_name=$(this)[0].name;            
             var match = element_name.match(/\[([^\]]+)\]/);
             var x = match ? match[1] : null;
+             var style=$(this).closest('.main_tbl_reapter').attr("style");
 
-            // console.log(element_name.name)
-          
+                if(style!="display: none;"){
+            
+            
             let item_unit =parseFloat($('input[name="items['+x+'][item_unit]"]').val()).toFixed(2);
             let item_rate =parseFloat($('input[name="items['+x+'][item_total]"]').val()).toFixed(2);
             let discount_amount =parseFloat($('input[name="items['+x+'][discount_value]"]').val()).toFixed(2);
@@ -384,10 +460,12 @@ function calculateTotal(){
                 if(total_pending_qty !== "" && !isNaN(total_pending_qty) && !isEmpty(total_pending_qty) && !isEmpty(total_received_qty) &&  (total_received_qty !=0)){
                     total_pending_qty1=parseFloat(total_pending_qty1)+parseFloat(total_pending_qty);
                 }
-                 console.log(total_pending_qty1+total_pending_qty1)
+                //  console.log(total_pending_qty1+total_pending_qty1)
+                 console.log("total_received_qty1qw"+total_received_qty1);
                 if(total_received_qty !== "" && !isNaN(total_received_qty) && !isEmpty(total_received_qty) ){
                     total_received_qty1=parseFloat(total_received_qty1)+parseFloat(total_received_qty);
                 }
+                 console.log("total_received_qty1"+total_received_qty1);
 
                 if(return_qty !== "" && !isNaN(return_qty) && !isEmpty(return_qty) ){
                     total_return_qty=parseFloat(total_return_qty)+parseFloat(return_qty);
@@ -424,6 +502,7 @@ function calculateTotal(){
                             final_amount_total=parseFloat(final_amount_total)+parseFloat(item_final_amount);
                             final_amount_total=parseFloat(final_amount_total).toFixed(2);
                         }
+                }
                 
     
     });
@@ -491,9 +570,9 @@ function calculateTotal(){
     let service_tax_rate= parseFloat($('#service_tax_rate').val());
   
     let service_tax_amount=0;
-    console.log("service_charge_type="+service_charge_type_val);
+    // console.log("service_charge_type="+service_charge_type_val);
     if(service_charge_type_val==1){
-        console.log("service_charge_type="+service_charge_type_val);
+        // console.log("service_charge_type="+service_charge_type_val);
          if(!isEmpty(service_charge_amount) && service_charge_amount!=0 &&  !isEmpty(service_tax_rate) && !isEmpty(service_tax_rate)){
             service_tax_amount=parseFloat(service_charge_amount*(service_tax_rate/100)).toFixed(2);       
         }
@@ -544,14 +623,20 @@ function calculateTotal(){
     if(!isEmpty(service_tax_amount)){
         po_final_amount=Number(po_final_amount)+Number(service_tax_amount);
     }
+    
+     if(!isEmpty(service_tax_amount)){
+        po_final_amount=Number(po_final_amount)+Number(service_tax_amount);
+    }
+    
+    let packing_forwarding_amount= parseFloat($('#packing_forwarding_amount').val());
     // console.log("po_final_amount="+po_final_amount);
-    if(!isEmpty(final_discount_amount)){
-        po_final_amount=Number(po_final_amount)-Number(final_discount_amount);
+    if(!isEmpty(packing_forwarding_amount)){
+        po_final_amount=Number(po_final_amount)+Number(packing_forwarding_amount);
     }
     // console.log("po_final_amount="+po_final_amount);
 
      po_final_amount1=Math.round(po_final_amount);
-     console.log("po_final_amount="+po_final_amount);
+    //  console.log("po_final_amount="+po_final_amount);
      let round_off=Number(po_final_amount1)-Number(po_final_amount);
      round_off=parseFloat(round_off).toFixed(2);
      $('#round_off').val(round_off);
@@ -586,7 +671,7 @@ function add_value_servicetax(type,element) {
         $('#'+selector_name).val( tax_rate);
        
           calculatePOItem(element);
-      
+      calculateTotal();
      
 }
 $('.get_vendor').select2({
@@ -636,7 +721,7 @@ $('#receive_location_site_id').select2({
  $('input[name="loaded_via"]').on('change', function() {
         // Get the value of the selected radio button
         var selectedValue = $('input[name="loaded_via"]:checked').val();      
-        console.log(selectedValue) 
+        // console.log(selectedValue) 
         if(selectedValue==1){
                 $('.load_party_vendor_div').hide();
         }else{
@@ -660,21 +745,15 @@ function submitGRN(){
         }
         
     }
-    // var EmptyInputs = CheckEmptyInputsGRN();
-    console.log("EmptyInputs="+EmptyInputs);
-    console.log("po_final_amount"+po_final_amount);
-    console.log("direct_grn_credit_amount"+direct_grn_credit_amount);
-    console.log("type"+$('#type').val());
-    console.log("id"+$('#id').val());
-    
-    if(($('#type').val()==1) && ($('#id').val()=='') && (po_final_amount > direct_grn_credit_amount) ){
-        Swal.fire({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'The direct GRN value should not exceed '+direct_grn_credit_amount+'.',
-                    // footer: '<a href>Why do I have this issue?</a>'
-                }) 
-    }else{
+
+    // if(($('#type').val()==1) && ($('#id').val()=='') && (po_final_amount > direct_grn_credit_amount) ){
+    //     Swal.fire({
+    //                 type: 'error',
+    //                 title: 'Oops...',
+    //                 text: 'The direct GRN value should not exceed '+direct_grn_credit_amount+'.',
+    //                 // footer: '<a href>Why do I have this issue?</a>'
+    //             }) 
+    // }else{
         if($("#form_grn").valid() && po_final_amount!=0  && EmptyInputs==0){      
               Swal.fire({
                         title: 'Are you sure ?',
@@ -716,7 +795,7 @@ function submitGRN(){
                 }) 
             //msg=" Customer Total UnPaid Limit "+shipper_customer_unpaid_credit_amount+" is between the "+shipper_customer_credit_min_limit_amount+" and "+shipper_customer_credit_max_limit_amount;
         }   
-    }    
+    // }    
        
 }
 function CheckEmptyInputsGRN() {
@@ -732,26 +811,22 @@ function CheckEmptyInputsGRN() {
                 
                 if(style!="display: none;"){
                   if(parseInt($('#type').val())==3 || parseInt($('#type').val())==2 ){
-                            let item_group_id =($('input[name="items['+x+'][item_group_id]"]').val());
-                            let items_id =($('input[name="items['+x+'][items_id]"]').val());                  
+                            let item_group_id =($('select[name="items['+x+'][item_group_id]"]').val());
+                            let items_id =($('select[name="items['+x+'][items_id]"]').val());                  
                             let item_rate =($('input[name="items['+x+'][item_unit_rate]"]').val())
                             let received_qty =($('input[name="items['+x+'][received_qty]"]').val())
                             let item_final_amount =($('input[name="items['+x+'][item_final_amount]"]').val())  
-                            console.log(item_group_id)
-                            console.log(items_id)
-                            console.log(item_rate)
-                            console.log(received_qty)
-                            console.log(item_final_amount)
+                            
                             
 
-                            if (isEmpty(item_group_id)) {
+                            if (isEmpty(item_group_id) && item_group_id!='all') {
                                 empty_count++;
                             }
                             if (isEmpty(items_id)) {
                                 empty_count++;
                             }
                            
-                             if (isEmpty(item_rate)) {
+                              if(isEmpty(item_rate) || (item_rate==0)|| (item_rate==0.00))  {
                                 empty_count++;
                             }
                             if (isEmpty(item_final_amount)) {
@@ -767,14 +842,14 @@ function CheckEmptyInputsGRN() {
                             let received_qty =($('input[name="items['+x+'][received_qty]"]').val())
                             let item_final_amount =($('input[name="items['+x+'][item_final_amount]"]').val())
 
-                            if (isEmpty(item_group_id)) {
+                            if (isEmpty(item_group_id) && item_group_id!='all') {
                                 empty_count++;
                             }
                             if (isEmpty(items_id)) {
                                 empty_count++;
                             }
                            
-                             if (isEmpty(item_rate)) {
+                              if(isEmpty(item_rate) || (item_rate==0)|| (item_rate==0.00))  {
                                 empty_count++;
                             }
                             if (isEmpty(item_final_amount)) {
@@ -811,8 +886,8 @@ $(document).ready(function() {
                         element_name=$(this)[0].name;                           
                         var match = element_name.match(/\[([^\]]+)\]/);
                         var x = match ? match[1] : null;
-                        let items_id =($('input[name="items['+x+'][items_id]"]').val());   
-                        console.log("items_id"+items_id)       
+                        let items_id =($('select[name="items['+x+'][items_id]"]').val());   
+                        // console.log("items_id"+items_id)       
                         if (!isEmpty(items_id)) {
                                 empty_count++;
                             }
@@ -841,16 +916,50 @@ function getVendorSiteData(){
                           data: response
                     })       
                           
-                    $("#vendor_id").select2("val", vendorId); 
-                    $("#received_by").select2("val", $('#receivedBy').val()); 
-                    $("#transport_id").select2("val", $('#transportId').val()); 
+                    $('#received_by').val($('#receivedBy').val()); // Select the option with a value of '1'
+                    $('#received_by').trigger('change'); 
+                    
+                    $('#transport_id').val( $('#transportId').val()); // Select the option with a value of '1'
+                    $('#transport_id').trigger('change'); 
+                    
+                    
+                    $('#checked_by').val($('#checkedBy').val()); // Select the option with a value of '1'
+                    $('#checked_by').trigger('change'); 
+                   
                  //   $("#is_party_vendor_id").select2("val", $('#partyVendorId').val()); 
                    // $("#load_party_id").select2("val", $('#loadedVendorId').val()); 
                     $('#is_party_vendor_id').val($('#partyVendorId').val()); // Select the option with a value of '1'
                     $('#is_party_vendor_id').trigger('change'); // Notif
                     $('#load_party_id').val($('#loadedVendorId').val()); // Select the option with a value of '1'
                     $('#load_party_id').trigger('change'); // Notif
-                     is_party_vendor_id
+                    
+                    $('#vendor_id').val(vendorId); // Select the option with a value of '1'
+                    $('#vendor_id').trigger('change'); // Notif
+                     
+                  }                
+              }
+          });
+          
+            $.ajax({
+               url:base_url +'admin/Common/listuser_name',       
+              type: "post",              
+              dataType: 'json',
+              success: function(response) {
+                
+                  if(response){
+                    $("#received_by").select2({                       
+                          data: response
+                    })       
+                          
+                    $('#received_by').val($('#receivedBy').val()); // Select the option with a value of '1'
+                    $('#received_by').trigger('change'); 
+                    
+                     $("#checked_by").select2({                       
+                          data: response
+                    })  
+                    $('#checked_by').val($('#checkedBy').val()); // Select the option with a value of '1'
+                    $('#checked_by').trigger('change'); 
+                   
                   }                
               }
           });
@@ -872,11 +981,11 @@ function getVendorSiteData(){
                           data: response
                     })   
                   
-                    console.log(response);
+                    // console.log(response);
                   //  $("#receive_location_site_id").select2("val", receiveLocationSiteId);    
                     $('#receive_location_site_id').val(receiveLocationSiteId); // Select the option with a value of '1'
                     $('#receive_location_site_id').trigger('change'); // Notify any JS components that the value changed
-                      console.log(receiveLocationSiteId);
+                    //   console.log(receiveLocationSiteId);
                   }                
                 }
             });
@@ -886,4 +995,65 @@ function getVendorSiteData(){
 
 }
 
-      
+$('#checked_by').select2({
+    ajax: {
+        url:base_url +'admin/Common/listuser_name',       
+            dataType: 'json',
+            delay: 250,
+            data: function (data) {
+                return {
+                    searchTerm: data.term,
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results:response
+                };
+            },
+            cache: true
+        }
+    });
+
+$('#received_by').select2({
+    ajax: {
+        url:base_url +'admin/Common/listuser_name',       
+            dataType: 'json',
+            delay: 250,
+            data: function (data) {
+                return {
+                    searchTerm: data.term,
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results:response
+                };
+            },
+            cache: true
+        }
+    });
+ $.validator.addMethod("futureDate", function(value, element) {
+        // console.log("asa")
+        // console.log(element)
+        var selectedDate = new Date(value);
+        var currentDate = new Date();
+        console.log(selectedDate)
+        console.log(currentDate)
+        
+        return selectedDate >= currentDate;
+        
+    }, "Please select a future date.");     
+    
+function clearItems(items){
+      var name = items.name;
+    // Regular expression to match the content between the first pair of square brackets
+    var match = name.match(/\[([^\]]+)\]/);
+
+    // Extract the content between the brackets (including the brackets)
+    var row_index = match ? match[1] : null;
+
+   $('select[name="items[' + row_index + '][items_id]"]').val(null).trigger("change");;
+   $('select[name="items[' + row_index + '][item_group_id]"]').val(null).trigger("change");;
+    
+  
+}
