@@ -305,7 +305,7 @@ Stylish tooltip
 .tooltip-content5 {
   position: absolute;
   z-index: 9999;
-  width: 300px;
+  width: auto;
   left: 50%;
   bottom: 100%;
   font-size: 20px;
