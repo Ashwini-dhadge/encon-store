@@ -38,7 +38,7 @@ class Auth extends CI_Controller
                 $getCompanyDataSite = $this->CommonModel->getData('tbl_company_master', array('id'=>$data[0]['company_id']),'name as company_name','','row_array');
                 $getFinancialYear = $this->CommonModel->getData('tbl_master_financial_year', array('id'=>$data[0]['financial_year_id']),'from_date,to_date','','row_array');
 
-                $financial_year= date('d/m/Y',strtotime($getFinancialYear['from_date']))."-".date('d/m/Y',strtotime($getFinancialYear['to_date']));
+                $financial_year= date('Y',strtotime($getFinancialYear['to_date'])) . "-" .date('y', strtotime($getFinancialYear['from_date']));
                 $session = array(
                         'project_name'=>'ENCON',
                         'user_id' => $data[0]['id'],

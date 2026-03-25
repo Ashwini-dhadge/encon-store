@@ -76,12 +76,12 @@
                    <!-- ============================================================== -->
                    <li class="nav-item dropdown mega-dropdown"> <a class="nav-link  waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                            <p class="text-white"><?= userId('company_site_name'); ?></p>
-                           <p class="text-white"><?= userId('company_financial_year'); ?></p>
+                           <p class="text-white">FY : &nbsp;<?= userId('company_financial_year'); ?></p>
                        </a>
 
                    </li>
                    <li class="nav-item dropdown">
-                       <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border:4px double white; border-radius: 10px; height:50px; width: 50px;">
+                       <a class="nav-link dropdown-toggle " href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border:4px double white; padding:0;border-radius: 50%; margin-top: 10px">
                            <?php
                             $user_image = userId('image');
                             ?>
@@ -119,7 +119,7 @@
 
            </div>
        </nav>
-       <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-theme pull-right" ><i class="ti-settings text-white"></i></button>
+       <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-theme pull-right"><i class="ti-settings text-white"></i></button>
    </header>
 
    <!-- ============================================================== -->

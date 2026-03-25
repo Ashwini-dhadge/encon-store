@@ -12,45 +12,8 @@ function opp_tracker_filter(){
     list_opportunity_tracker(data);
   }
 
-$('#customerid').select2({
-  ajax: {
-    url: base_url + 'admin/Common/listCompanyName',
-    dataType: 'json',
-    delay: 250,
-    data: function (data) {
-
-      return {
-        searchTerm: data.term,
-      };
-    },
-    processResults: function (response) {
-      return {
-        results: response
-      };
-    },
-    cache: true
-  }
-});
-
-$('#plant_id').select2({
-  ajax: {
-    url: base_url + 'admin/Common/plant_name_list',
-    dataType: 'json',
-    delay: 250,
-    data: function (data) {
-      return {
-        searchTerm: data.term,
-        'customer_id': $('.customer_name').val(),
-      };
-    },
-    processResults: function (response) {
-      return {
-        results: response
-      };
-    },
-    cache: true
-  }
-}); 
+  
+  
   
    var opportunity_tracker = '';
   function list_opportunity_tracker(data='') {
