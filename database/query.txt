@@ -1,0 +1,6 @@
+ALTER TABLE `tbl_mainfest_vendor_billing` ADD `total_wt` DOUBLE(10,2) NULL AFTER `vendor_collection_id`, ADD `no_of_package` INT NULL AFTER `total_wt`, ADD `no_of_shipment` INT NULL AFTER `no_of_package`, ADD `rate` DOUBLE(10,2) NULL AFTER `no_of_shipment`; 
+ALTER TABLE `tbl_mainfest_vendor_billing` CHANGE `status` `status` INT(1) NULL DEFAULT '0' COMMENT '0:pending 1:created 2:pay 3:Partial Paid';
+ALTER TABLE `tbl_mainfest_vendor_billing` ADD `pending_amount` DOUBLE(10,2) NULL AFTER `amount`; 
+
+
+ALTER TABLE `tbl_customer_profile` ADD `pincode` INT NULL AFTER `address`; 

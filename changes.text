@@ -1,0 +1,12 @@
+Roleacces
+ -controller
+ -modal
+ -view
+ -js
+
+
+
+ ALTER TABLE `tbl_shipment_eway_bill_details` ADD `deleted_by` INT NULL AFTER `updated_at`, ADD `deleted_at` DATETIME NULL AFTER `deleted_by`; 
+
+
+ ALTER TABLE `tbl_shipment_invoice_details ` ADD `deleted_by` INT NULL AFTER `updated_at`, ADD `deleted_at` DATETIME NULL AFTER `deleted_by`; 

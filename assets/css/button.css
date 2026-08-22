@@ -1,0 +1,48 @@
+/*07-12*/
+
+.btn-info {
+    color: #fff !important;
+    background-color: #0c53a3 !important;
+    border-color: #0c53a3 !important;
+}
+/*.btn-primary  {*/
+/*  color: #fff !important;*/
+/*  background-color: #0c53a3 !important;*/
+/*  border-color: #0c53a3 !important;*/
+/*}*/
+.btn-primary , .btn-primary.disabled {
+    background: #0c53a3;
+    border: 1px solid #0c53a3;
+    transition: 0.2s ease-in;
+  }
+
+  .paging_simple_numbers .pagination .paginate_button.active a,
+  .paging_simple_numbers .pagination .paginate_button:hover a {
+  
+    background: #48bc97 !important;
+    color: #ffffff;
+}
+
+.btn-primary, .btn-primary.disabled {
+    background: #f0f0f0 !important;
+    border: 1px solid #c1c1c3 !important;
+    transition: 0.2s ease-in;
+}
+
+
+a {
+    color: #20aee3 !important;
+}
+.btn-secondary:not(:disabled):not(.disabled).active,
+.btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+    color: #fff;
+    background-color: #0c53a3 !important;
+    border-color: #4e555b;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #0c53a3 !important;
+    border-color: #0c53a3 !important;
+}
+

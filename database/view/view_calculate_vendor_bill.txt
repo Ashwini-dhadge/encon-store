@@ -1,0 +1,36 @@
+Query For get vendor to pay bill
+/********************************************************************************************************************
+Start 
+view Name :view_calculate_vendor_bill
+***********************************************************************************************************************/
+
+
+SELECT
+    SUM(pending_amount) AS total_to_pay_cash,
+    vendor_id,
+    2 AS billing_type
+FROM
+    `tbl_mainfest_vendor_billing`
+WHERE
+STATUS in (1,3)
+  
+GROUP BY
+    vendor_id
+UNION
+SELECT
+    SUM(pending_amount) AS total_to_pay_cash,
+    vendor_id,
+    3 AS TYPE
+FROM
+    `tbl_drs_vendor_billing`
+WHERE
+STATUS in (1,3)
+
+GROUP BY
+    vendor_id;
+    
+    
+/********************************************************************************************************************
+end 
+view Name :view_get_customer_used_credit_limit
+***********************************************************************************************************************/

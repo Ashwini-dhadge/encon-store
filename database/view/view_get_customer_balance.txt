@@ -1,0 +1,33 @@
+Query For get customer credit_min_limit_amount, credit_max_limit_amount  with total used credit_limt
+
+/********************************************************************************************************************
+Start 
+view Name :view_get_customer_used_credit_limit
+***********************************************************************************************************************/
+
+
+SELECT
+    SUM(sr.shipment_final_total) AS final_amount,
+    `s`.`shipper_cust_id`,  
+    `s`.`id`,
+    cp.credit_min_limit_amount,
+    cp.credit_max_limit_amount
+FROM
+    `tbl_shipment` `s`
+JOIN `tbl_shipment_rate_details` `sr` ON
+    `sr`.`shipment_id` = `s`.`id`
+JOIN `tbl_customer` `c` ON
+    `c`.`id` = `s`.`shipper_cust_id`
+Join tbl_customer_profile  cp on  c.id=cp.cust_id
+WHERE
+    `s`.`booking_type_id` = 1 AND `s`.`deleted_by` IS NULL and s.shipment_payment_status!=1
+GROUP BY
+    `s`.`shipper_cust_id`
+ORDER BY
+    `s`.`id`;
+    
+    
+/********************************************************************************************************************
+end 
+view Name :view_get_customer_used_credit_limit
+***********************************************************************************************************************/

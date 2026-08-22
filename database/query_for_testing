@@ -1,0 +1,256 @@
+SELECT
+    inv_d.company_id,
+    inv_d.site_id,
+    inv_d.financial_year_id,
+    inv_d.item_id,
+    inv_d.item_unit_id,
+    inv_d.batch_no,
+    inv_d.expired_date,
+    inv_d.is_reserve_stock,
+    SUM(
+        CASE WHEN ACTION = 1 THEN inv_d.qty ELSE - inv_d.qty
+    END
+) AS balance,
+SUM(
+    CASE WHEN inv_d.rate_type = 2 AND ACTION = 1 THEN inv_d.weight * inv_d.rate WHEN inv_d.rate_type = 2 AND ACTION = 2 THEN -1 * inv_d.weight * inv_d.rate WHEN inv_d.rate_type = 1 AND ACTION = 2 THEN -1 * inv_d.qty * inv_d.rate ELSE inv_d.qty * inv_d.rate
+END
+) AS total_amount,
+inv_d.created_at
+FROM
+    `tbl_items_inventory_details` inv_d
+LEFT JOIN tbl_grn_items_details grn ON
+    inv_d.type = 1 AND inv_d.ref_id = grn.grn_id AND inv_d.item_id = grn.item_id AND inv_d.item_unit_id = grn.item_unit_id AND grn.deleted_by IS NULL
+LEFT JOIN tbl_material_issue_items_details mi ON
+    inv_d.type = 2 AND inv_d.ref_id = mi.issue_id AND inv_d.item_id = mi.item_id AND inv_d.item_unit_id = mi.issue_qty_unit AND mi.deleted_by IS NULL
+LEFT JOIN tbl_items_opening_stock_details os ON
+    inv_d.type = 3 AND inv_d.ref_id = os.opening_id AND inv_d.item_id = os.item_id AND inv_d.item_unit_id = os.opening_unit_id AND os.deleted_by IS NULL
+LEFT JOIN tbl_recevied_material_issue_items_details rs ON
+    inv_d.type = 4 AND inv_d.ref_id = rs.received_id AND inv_d.item_id = rs.item_id AND inv_d.item_unit_id = rs.received_qty_unit AND rs.deleted_by IS NULL
+LEFT JOIN tbl_material_issue_return_details mr ON
+    inv_d.type = 5 AND inv_d.ref_id = mr.material_issue_return_id AND inv_d.item_id = mr.item_id AND inv_d.item_unit_id = mr.return_qty_unit AND mr.deleted_by IS NULL
+LEFT JOIN tbl_items_financial_year_opening_stock_details fosd ON
+    inv_d.type = 6 AND inv_d.ref_id = fosd.financial_year_opening_id AND inv_d.item_id = fosd.item_id AND inv_d.item_unit_id = fosd.item_unit_id
+WHERE
+    inv_d.type IN(1, 3, 4, 6) AND inv_d.company_id = 2 AND inv_d.site_id = 38 AND inv_d.item_id = 2858 AND inv_d.item_unit_id = 4002 AND inv_d.is_reserve_stock = 0 AND DATE(inv_d.created_at) = '2024-04-01'
+GROUP BY
+    inv_d.company_id,
+    inv_d.site_id,
+    inv_d.financial_year_id,
+    inv_d.item_id,
+    inv_d.item_unit_id;
+    
+    
+    
+/**************************/
+
+
+     SELECT
+            inv_d.company_id,
+            inv_d.site_id,
+            inv_d.financial_year_id,
+            inv_d.item_id,
+            inv_d.item_unit_id,
+            inv_d.batch_no,
+            inv_d.expired_date,
+            inv_d.is_reserve_stock,
+            SUM(CASE WHEN inv_d.action = 1 THEN inv_d.qty ELSE 0 END) AS total_received,
+            SUM(CASE 
+                    WHEN inv_d.rate_type = 2 AND inv_d.action = 1 THEN inv_d.weight * inv_d.rate                   
+                    WHEN inv_d.rate_type = 1 AND inv_d.action = 1 THEN inv_d.qty * inv_d.rate 
+                    ELSE 0
+                END) AS total_amount
+            
+        FROM
+            `tbl_items_inventory_details` inv_d
+        LEFT JOIN tbl_grn_items_details grn ON
+            inv_d.type = 1 AND inv_d.ref_id = grn.grn_id AND inv_d.item_id = grn.item_id AND inv_d.item_unit_id = grn.item_unit_id AND grn.deleted_by IS NULL
+        LEFT JOIN tbl_material_issue_items_details mi ON
+            inv_d.type = 2 AND inv_d.ref_id = mi.issue_id AND inv_d.item_id = mi.item_id AND inv_d.item_unit_id = mi.issue_qty_unit AND mi.deleted_by IS NULL
+        LEFT JOIN tbl_items_opening_stock_details os ON
+            inv_d.type = 3 AND inv_d.ref_id = os.opening_id AND inv_d.item_id = os.item_id AND inv_d.item_unit_id = os.opening_unit_id AND os.deleted_by IS NULL
+        LEFT JOIN tbl_recevied_material_issue_items_details rs ON
+            inv_d.type = 4 AND inv_d.ref_id = rs.received_id AND inv_d.item_id = rs.item_id AND inv_d.item_unit_id = rs.received_qty_unit AND rs.deleted_by IS NULL
+        LEFT JOIN tbl_material_issue_return_details mr ON
+            inv_d.type = 5 AND inv_d.ref_id = mr.material_issue_return_id AND inv_d.item_id = mr.item_id AND inv_d.item_unit_id = mr.return_qty_unit AND mr.deleted_by IS NULL
+        LEFT JOIN tbl_items_financial_year_opening_stock_details fosd ON
+            inv_d.type = 6 AND inv_d.ref_id = fosd.financial_year_opening_id AND inv_d.item_id = fosd.item_id AND inv_d.item_unit_id = fosd.item_unit_id
+        WHERE 
+            inv_d.type != 6 AND  
+            inv_d.is_reserve_stock = 0 AND
+            inv_d.company_id =7  AND
+            inv_d.site_id = 21 AND
+            inv_d.item_id =2511  AND
+            inv_d.financial_year_id = 2 AND
+            inv_d.item_unit_id = 3396 
+     AND DATE(inv_d.created_at) >='2024-04-01' AND DATE(inv_d.created_at) <= '2024-04-30'  
+ORDER BY `inv_d`.`id` ASC;
+
+
+
+
+
+
+
+
+
+SELECT
+            inv_d.company_id,
+            inv_d.site_id,
+            inv_d.financial_year_id,
+            inv_d.item_id,
+            inv_d.item_unit_id,
+            inv_d.batch_no,
+            inv_d.expired_date,
+            inv_d.is_reserve_stock,
+            inv_d.qty,
+            inv_d.action,
+            (SELECT grn.item_rate_type  
+                FROM tbl_grn_items_details grn1
+                JOIN tbl_grn g1 ON g1.id=grn1.grn_id
+                WHERE inv_d.item_id = grn.item_id
+                    AND inv_d.item_unit_id = grn.item_unit_id
+                    AND inv_d.batch_no = grn.batch_no
+                    AND inv_d.expired_date = grn.expired_date
+                    AND g1.site_id = inv_d.site_id
+                    AND g1.financial_year_id = inv_d.financial_year_id order by grn1.id limit 1),
+            (SELECT osd1.item_rate_type  
+                FROM tbl_items_opening_stock_details osd1
+                JOIN tbl_items_opening_stock os1 ON os1.id=osd1.opening_id
+                WHERE inv_d.item_id = osd1.item_id
+                    AND inv_d.item_unit_id = osd1.opening_unit_id
+                    AND inv_d.batch_no = osd1.batch_no
+                    AND inv_d.expired_date = osd1.expired_date
+                    AND os1.location_id = inv_d.site_id
+                    AND os1.financial_year_id = inv_d.financial_year_id order by osd1.id limit 1),
+            (SELECT DISTINCT(CASE
+                                WHEN rece_d.weight IS NULL OR rece_d.weight = 0.00
+                                THEN 1
+                                ELSE 2
+                            END)  
+                FROM tbl_recevied_material_issue_items_details rece_d
+                JOIN tbl_recevied_material_issue rece
+                    ON rece.id = rece_d.received_id
+                WHERE inv_d.item_id = rece_d.item_id
+                    AND inv_d.item_unit_id = rece_d.received_qty_unit
+                    AND inv_d.batch_no = rece_d.batch_no
+                    AND inv_d.expired_date = rece_d.expired_date
+                    AND rece.received_location_site_id = inv_d.site_id
+                    AND rece.financial_year_id = inv_d.financial_year_id order by rece_d.id limit 1),
+            (SELECT DISTINCT(grn.item_rate)
+                FROM tbl_grn_items_details grn1
+                JOIN tbl_grn g1 ON g1.id=grn1.grn_id
+                WHERE inv_d.item_id = grn.item_id
+                    AND inv_d.item_unit_id = grn.item_unit_id
+                    AND inv_d.batch_no = grn.batch_no
+                    AND inv_d.expired_date = grn.expired_date
+                    AND g1.site_id=inv_d.site_id
+                    AND g1.financial_year_id=inv_d.financial_year_id order by grn1.id limit 1),
+            (SELECT DISTINCT(osd1.unit_rate)
+                FROM tbl_items_opening_stock_details osd1
+                JOIN tbl_items_opening_stock os1 ON os1.id=osd1.opening_id
+                WHERE inv_d.item_id = osd1.item_id
+                    AND inv_d.item_unit_id = osd1.opening_unit_id
+                    AND inv_d.batch_no = osd1.batch_no
+                    AND inv_d.expired_date = osd1.expired_date
+                    AND os1.location_id=inv_d.site_id
+                    AND os1.financial_year_id=inv_d.financial_year_id  order by osd1.id limit 1),
+            (SELECT DISTINCT(rece_d.rate)
+                FROM tbl_recevied_material_issue_items_details rece_d
+                JOIN tbl_recevied_material_issue rece
+                    ON rece.id=rece_d.received_id
+                WHERE inv_d.item_id=rece_d.item_id
+                    AND inv_d.item_unit_id=rece_d.received_qty_unit
+                    AND inv_d.batch_no=rece_d.batch_no
+                    AND inv_d.expired_date=rece_d.expired_date
+                    AND rece.received_location_site_id=inv_d.site_id
+                    AND rece.financial_year_id=inv_d.financial_year_id  order by rece_d.id limit 1),
+            (SELECT DISTINCT(grn.weight_per_rate)
+                FROM tbl_grn_items_details grn1
+                JOIN tbl_grn g1 ON g1.id=grn1.grn_id
+                WHERE inv_d.item_id=grn.item_id
+                    AND inv_d.item_unit_id=grn.item_unit_id
+                    AND inv_d.batch_no=grn.batch_no
+                    AND inv_d.expired_date=grn.expired_date
+                    AND g1.site_id=inv_d.site_id
+                    AND g1.financial_year_id=inv_d.financial_year_id order by grn1.id limit 1),
+            (SELECT DISTINCT(osd1.weight_per_rate)
+                FROM tbl_items_opening_stock_details osd1
+                JOIN tbl_items_opening_stock os1 ON os1.id=osd1.opening_id
+                WHERE inv_d.item_id=osd1.item_id
+                    AND inv_d.item_unit_id=osd1.opening_unit_id
+                    AND inv_d.batch_no=osd1.batch_no
+                    AND inv_d.expired_date=osd1.expired_date
+                    AND os1.location_id=inv_d.site_id
+                    AND os1.financial_year_id=inv_d.financial_year_id order by osd1.id limit 1),
+            (SELECT MAX(rece_d.amount / rece_d.received_qty)
+                FROM tbl_recevied_material_issue_items_details rece_d
+                JOIN tbl_recevied_material_issue rece
+                    ON rece.id=rece_d.received_id
+                WHERE inv_d.item_id=rece_d.item_id
+                    AND inv_d.item_unit_id=rece_d.received_qty_unit
+                    AND inv_d.batch_no=rece_d.batch_no
+                    AND inv_d.expired_date=rece_d.expired_date
+                    AND rece.received_location_site_id=inv_d.site_id
+                    AND rece.financial_year_id=inv_d.financial_year_id order by rece.id limit 1),
+            (SELECT MAX(rece_d.weight)
+                FROM tbl_recevied_material_issue_items_details rece_d
+                JOIN tbl_recevied_material_issue rece
+                    ON rece.id=rece_d.received_id
+                WHERE inv_d.item_id=rece_d.item_id
+                    AND inv_d.item_unit_id=rece_d.received_qty_unit
+                    AND inv_d.batch_no=rece_d.batch_no
+                    AND inv_d.expired_date=rece_d.expired_date
+                    AND rece.received_location_site_id=inv_d.site_id
+                    AND rece.financial_year_id=inv_d.financial_year_id order by rece.id limit 1)
+        FROM
+            `tbl_items_inventory_details` inv_d
+        LEFT JOIN tbl_grn_items_details grn
+            ON inv_d.type = 1
+            AND inv_d.ref_id = grn.grn_id
+            AND inv_d.item_id = grn.item_id
+            AND inv_d.item_unit_id = grn.item_unit_id
+            AND inv_d.qty = grn.received_qty
+        LEFT JOIN tbl_material_issue_items_details mi
+            ON inv_d.type = 2
+            AND inv_d.ref_id = mi.issue_id
+            AND inv_d.item_id = mi.item_id
+            AND inv_d.item_unit_id = mi.issue_qty_unit
+            AND inv_d.qty = mi.issue_qty
+        LEFT JOIN tbl_items_opening_stock_details os
+            ON inv_d.type = 3
+            AND inv_d.ref_id = os.opening_id
+            AND inv_d.item_id = os.item_id
+            AND inv_d.item_unit_id = os.opening_unit_id
+            AND inv_d.qty = os.opening_qty
+        LEFT JOIN tbl_recevied_material_issue_items_details rs
+            ON inv_d.type = 4
+            AND inv_d.ref_id = rs.received_id
+            AND inv_d.item_id = rs.item_id
+            AND inv_d.item_unit_id = rs.received_qty_unit
+            AND inv_d.qty = rs.received_qty
+        LEFT JOIN tbl_material_issue_return_details mr
+            ON inv_d.type = 5
+            AND inv_d.ref_id = mr.material_issue_return_id
+            AND inv_d.item_id = mr.item_id
+            AND inv_d.item_unit_id = mr.return_qty_unit
+            AND inv_d.qty = mr.return_qty
+        LEFT JOIN tbl_items_financial_year_opening_stock_details fosd
+            ON inv_d.type = 6
+            AND inv_d.ref_id = fosd.financial_year_opening_id
+            AND inv_d.item_id = fosd.item_id
+            AND inv_d.item_unit_id = fosd.item_unit_id
+            AND inv_d.qty = fosd.qty
+        WHERE
+            grn.deleted_by IS NULL  
+            AND mi.deleted_by IS NULL
+            AND os.deleted_by IS NULL  
+            AND rs.deleted_by IS NULL
+            AND mr.deleted_by IS NULL
+            AND inv_d.type != 6
+            AND inv_d.is_reserve_stock = 0
+            AND inv_d.company_id = 7
+            AND inv_d.site_id = 21
+            AND inv_d.item_id = 2875
+            and inv_d.action=2
+            AND inv_d.financial_year_id = 2
+            AND inv_d.item_unit_id = 4019  AND DATE(inv_d.created_at) >= "2024-04-01" AND DATE(inv_d.created_at) <= "2024-05-31";

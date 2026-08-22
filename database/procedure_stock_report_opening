@@ -1,0 +1,53 @@
+CREATE PROCEDURE `procedure_stock_report_opening`(IN `input_item_id` INT, IN `input_item_unit_id` INT, IN `input_company_id` INT, IN `input_site_id` INT, IN `input_previous_date` INT, IN `input_to_date` INT, IN `is_first_day_opning` INT, IN `input_is_reserve_stock` INT) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN
+    SET @sql = CONCAT('
+        SELECT
+            inv_d.company_id,
+            inv_d.site_id,
+            inv_d.financial_year_id,
+            inv_d.item_id,
+            inv_d.item_unit_id,
+            inv_d.batch_no,
+            inv_d.expired_date,
+            inv_d.is_reserve_stock,
+            SUM(CASE WHEN action = 1 THEN inv_d.qty ELSE -inv_d.qty END) AS balance,
+            SUM(CASE 
+                    WHEN rate_type = 2 AND action = 1 THEN weight * rate 
+                    WHEN rate_type = 2 AND action = 2 THEN -1 * weight * rate 
+                    WHEN rate_type = 1 AND action = 2 THEN -1 * qty * rate 
+                    ELSE  qty * rate
+                END) AS total_amount
+        FROM
+            `tbl_items_inventory_details` inv_d
+        LEFT JOIN tbl_grn_items_details grn ON
+            inv_d.type = 1 AND inv_d.ref_id = grn.grn_id AND inv_d.item_id = grn.item_id AND inv_d.item_unit_id = grn.item_unit_id and grn.deleted_by is NULL
+        LEFT JOIN tbl_material_issue_items_details mi ON
+            inv_d.type = 2 AND inv_d.ref_id = mi.issue_id AND inv_d.item_id = mi.item_id AND inv_d.item_unit_id = mi.issue_qty_unit and mi.deleted_by is NULL
+        LEFT JOIN tbl_items_opening_stock_details os ON
+            inv_d.type = 3 AND inv_d.ref_id = os.opening_id AND inv_d.item_id = os.item_id AND inv_d.item_unit_id = os.opening_unit_id and os.deleted_by is NULL
+        LEFT JOIN tbl_recevied_material_issue_items_details rs ON
+            inv_d.type = 4 AND inv_d.ref_id = rs.received_id AND inv_d.item_id = rs.item_id AND inv_d.item_unit_id = rs.received_qty_unit and rs.deleted_by is NULL
+        LEFT JOIN tbl_material_issue_return_details mr ON
+            inv_d.type = 5 AND inv_d.ref_id = mr.material_issue_return_id AND inv_d.item_id = mr.item_id AND inv_d.item_unit_id = mr.return_qty_unit and mr.deleted_by is NULL
+        LEFT JOIN tbl_items_financial_year_opening_stock_details fosd ON
+            inv_d.type = 6 AND inv_d.ref_id = fosd.financial_year_opening_id AND inv_d.item_id = fosd.item_id AND inv_d.item_unit_id = fosd.item_unit_id
+        WHERE 
+            inv_d.type IN (1, 3, 4, 6) AND
+            inv_d.company_id = ', input_company_id, ' AND
+            inv_d.site_id = ', input_site_id, ' AND
+            inv_d.item_id = ', input_item_id, ' AND
+            inv_d.item_unit_id = ', input_item_unit_id, ' AND
+            inv_d.is_reserve_stock = ', input_is_reserve_stock
+    );
+
+    IF is_first_day_opning = 1 THEN
+        SET @sql = CONCAT(@sql, ' AND DATE(inv_d.created_at) = ', input_to_date);
+    ELSE
+        SET @sql = CONCAT(@sql, ' AND DATE(inv_d.created_at) <= ', input_previous_date, ' AND DATE(inv_d.created_at) >= ', input_to_date);
+    END IF;
+
+    SET @sql = CONCAT(@sql, ' GROUP BY inv_d.company_id, inv_d.site_id, inv_d.financial_year_id, inv_d.item_id, inv_d.item_unit_id, inv_d.batch_no, inv_d.expired_date, inv_d.is_reserve_stock');
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END

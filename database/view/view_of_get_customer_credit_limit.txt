@@ -1,0 +1,27 @@
+Query For get customer balance for wallet Trancation
+
+/********************************************************************************************************************
+Start 
+view Name :view_customer_wallet_balance
+***********************************************************************************************************************/
+
+
+select
+	customer_id,totalAdded-totalSubtract as balance ,totalAdded,totalSubtract
+from
+(
+    SELECT
+  	 Sum( Case When `action` = 1 Then `amount` Else 0 End)  AS totalAdded ,
+	Sum( Case When `action` = 2 Then `amount` Else 0 End)   AS totalSubtract ,
+    customer_id
+	FROM
+    wallet_transaction
+    GROUP by customer_id
+	
+) customer_wallet_balance;
+    
+/********************************************************************************************************************
+end 
+view Name :view_customer_wallet_balance
+***********************************************************************************************************************/
+

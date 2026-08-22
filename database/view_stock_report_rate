@@ -1,0 +1,74 @@
+SELECT
+    inv_d.company_id,
+    inv_d.site_id,
+    inv_d.financial_year_id,
+    inv_d.item_id,
+    inv_d.item_unit_id,
+    inv_d.batch_no,
+    inv_d.expired_date,
+    inv_d.is_reserve_stock,
+    inv_d.type,
+    inv_d.qty,
+    COALESCE(
+        rate_grn.item_rate,
+        rate_opening_stock.unit_rate,
+        rate_new_opening.unit_rate
+    ) AS rate
+FROM
+    `tbl_items_inventory_details` inv_d
+LEFT JOIN(
+    SELECT grn.item_id,
+        grn.item_unit_id,
+        grn.batch_no,
+        grn.expired_date,
+        grn.item_rate,
+        g.company_id,
+        g.site_id,
+        g.financial_year_id
+    FROM
+        tbl_grn_items_details grn
+    JOIN tbl_grn g ON
+        g.id = grn.grn_id
+    WHERE
+        g.deleted_by IS NULL
+) AS rate_grn
+ON
+    inv_d.item_id = rate_grn.item_id AND inv_d.item_unit_id = rate_grn.item_unit_id AND inv_d.batch_no = rate_grn.batch_no AND inv_d.expired_date = rate_grn.expired_date AND inv_d.company_id = rate_grn.company_id AND inv_d.site_id = rate_grn.site_id AND inv_d.financial_year_id = rate_grn.financial_year_id
+LEFT JOIN(
+    SELECT osd.item_id,
+        osd.opening_unit_id AS item_unit_id,
+        osd.batch_no,
+        osd.expired_date,
+        osd.unit_rate,
+        os.company_id,
+        os.site_id,
+        os.financial_year_id
+    FROM
+        tbl_items_opening_stock_details osd
+    JOIN tbl_items_opening_stock os ON
+        os.id = osd.opening_id
+    WHERE
+        os.deleted_by IS NULL
+) AS rate_opening_stock
+ON
+    inv_d.item_id = rate_opening_stock.item_id AND inv_d.item_unit_id = rate_opening_stock.item_unit_id AND inv_d.batch_no = rate_opening_stock.batch_no AND inv_d.expired_date = rate_opening_stock.expired_date AND inv_d.company_id = rate_opening_stock.company_id AND inv_d.site_id = rate_opening_stock.site_id AND inv_d.financial_year_id = rate_opening_stock.financial_year_id
+LEFT JOIN(
+    SELECT fosd.item_id,
+        fosd.item_unit_id,
+        fosd.batch_no,
+        fosd.expired_date,
+        fosd.unit_rate,
+        fos.company_id,
+        fos.site_id,
+        fos.financial_year_id
+    FROM
+        tbl_items_financial_year_opening_stock_details fosd
+    JOIN tbl_items_financial_year_opening_stock fos ON
+        fos.id = fosd.financial_year_opening_id
+) AS rate_new_opening
+ON
+    inv_d.item_id = rate_new_opening.item_id AND inv_d.item_unit_id = rate_new_opening.item_unit_id AND inv_d.batch_no = rate_new_opening.batch_no AND inv_d.expired_date = rate_new_opening.expired_date AND inv_d.company_id = rate_new_opening.company_id AND inv_d.site_id = rate_new_opening.site_id AND inv_d.financial_year_id = rate_new_opening.financial_year_id
+ORDER BY
+    `rate`
+DESC
+    ;
