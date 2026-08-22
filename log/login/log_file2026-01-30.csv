@@ -1,4 +1,0 @@
-user_id,role_id,branch_id,login/logout,system_inforamtion,brwoser_inforation,created_at
-1,1,admin,login,::1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64) AppleWebKit/537.36 (KHTML  like Gecko) Chrome/144.0.0.0 Safari/537.36","2026-01-30 10:58:43"
-1,1,admin,login,::1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64) AppleWebKit/537.36 (KHTML  like Gecko) Chrome/144.0.0.0 Safari/537.36","2026-01-30 12:23:26"
-1,1,admin,login,::1,"Mozilla/5.0 (Windows NT 10.0  Win64  x64) AppleWebKit/537.36 (KHTML  like Gecko) Chrome/144.0.0.0 Safari/537.36","2026-01-30 14:25:56"
